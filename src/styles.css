@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Manrope:wght@400;500;700&display=swap');
+
+:root {
+  font-family: 'Manrope', sans-serif;
+  color: #f4ead7;
+  background:
+    radial-gradient(circle at top left, rgba(255, 122, 61, 0.24), transparent 30%),
+    radial-gradient(circle at right, rgba(255, 194, 102, 0.18), transparent 32%),
+    linear-gradient(135deg, #120d0a 0%, #1d1410 40%, #090807 100%);
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+button,
+.system-card,
+.hero-card {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+.aurora {
+  position: absolute;
+  width: 34rem;
+  height: 34rem;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: 0.42;
+}
+
+.aurora-left {
+  top: -10rem;
+  left: -8rem;
+  background: rgba(255, 115, 0, 0.45);
+}
+
+.aurora-right {
+  right: -8rem;
+  bottom: -10rem;
+  background: rgba(255, 196, 92, 0.32);
+}
+
+.landing {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 2rem;
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 4rem 0 5rem;
+}
+
+.hero-card {
+  padding: 3rem;
+  border: 1px solid rgba(255, 214, 153, 0.15);
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(43, 28, 17, 0.82), rgba(21, 15, 11, 0.92));
+  backdrop-filter: blur(12px);
+  animation: rise 700ms ease-out;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: #ffbe73;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+h1,
+h2 {
+  font-family: 'Cinzel', serif;
+  line-height: 1.05;
+  margin: 0;
+}
+
+h1 {
+  max-width: 10ch;
+  font-size: clamp(3.4rem, 8vw, 6.5rem);
+}
+
+.hero-copy {
+  max-width: 42rem;
+  margin: 1.25rem 0 0;
+  font-size: 1.08rem;
+  color: rgba(244, 234, 215, 0.86);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.hero-actions button,
+.hero-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.hero-actions button {
+  background: linear-gradient(135deg, #ff8c3a, #ffd27b);
+  color: #24150a;
+  font-weight: 800;
+}
+
+.hero-actions a {
+  border: 1px solid rgba(255, 214, 153, 0.28);
+  color: #f4ead7;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.hero-actions button:hover,
+.hero-actions a:hover {
+  transform: translateY(-2px);
+}
+
+.systems {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.system-card {
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 214, 153, 0.12);
+  background: linear-gradient(180deg, rgba(35, 24, 18, 0.88), rgba(18, 14, 12, 0.88));
+  animation: rise 850ms ease-out;
+}
+
+.system-card:nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.system-card:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.system-tag {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  color: #ffbe73;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.system-card h2 {
+  font-size: 1.65rem;
+}
+
+.system-card p {
+  margin: 0.8rem 0 0;
+  color: rgba(244, 234, 215, 0.78);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 860px) {
+  .landing {
+    padding-top: 2rem;
+  }
+
+  .hero-card {
+    padding: 2rem;
+  }
+
+  .systems {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .landing {
+    width: min(100% - 1rem, 100%);
+  }
+
+  .hero-card,
+  .system-card {
+    border-radius: 22px;
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+}
