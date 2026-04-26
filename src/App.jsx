@@ -1,51 +1,53 @@
-const features = [
-  {
-    title: 'Forge Loadout',
-    description: 'Build weapon sets, tune stats, and compare rarity tiers for each crafted run.',
-  },
-  {
-    title: 'Guild Missions',
-    description: 'Track contracts, rotating encounters, and reward milestones from one command board.',
-  },
-  {
-    title: 'Battle Intel',
-    description: 'Surface enemy traits, elemental weaknesses, and upgrade paths before the next arena push.',
-  },
-]
+import { useState } from 'react';
+import { getSession } from './utils/storage.js';
+import AuthScreen     from './screens/AuthScreen.jsx';
+import MainMenuScreen from './screens/MainMenuScreen.jsx';
+import GameScreen     from './screens/GameScreen.jsx';
 
 function App() {
+  const session = getSession();
+
+  const [screen,   setScreen]   = useState(session ? 'menu' : 'auth');
+  const [username, setUsername] = useState(session?.username ?? '');
+  const [save,     setSave]     = useState(null);
+
+  if (screen === 'auth') {
+    return (
+      <AuthScreen
+        onLogin={(u) => {
+          setUsername(u);
+          setScreen('menu');
+        }}
+      />
+    );
+  }
+
+  if (screen === 'game' && save) {
+    return (
+      <GameScreen
+        initialState={save}
+        username={username}
+        onReturnMenu={() => {
+          setSave(null);
+          setScreen('menu');
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="app-shell">
-      <div className="aurora aurora-left" />
-      <div className="aurora aurora-right" />
-
-      <main className="landing">
-        <section className="hero-card">
-          <p className="eyebrow">Gaming Web App Starter</p>
-          <h1>Legendary Blacksmith</h1>
-          <p className="hero-copy">
-            A bold React starter for a fantasy combat hub. Use it as the base for progression,
-            crafting, matchmaking, or live event systems.
-          </p>
-
-          <div className="hero-actions">
-            <button type="button">Enter the Forge</button>
-            <a href="#systems">View Systems</a>
-          </div>
-        </section>
-
-        <section className="systems" id="systems">
-          {features.map((feature) => (
-            <article className="system-card" key={feature.title}>
-              <span className="system-tag">Core Module</span>
-              <h2>{feature.title}</h2>
-              <p>{feature.description}</p>
-            </article>
-          ))}
-        </section>
-      </main>
-    </div>
-  )
+    <MainMenuScreen
+      username={username}
+      onPlay={(s) => {
+        setSave(s);
+        setScreen('game');
+      }}
+      onLogout={() => {
+        setUsername('');
+        setScreen('auth');
+      }}
+    />
+  );
 }
 
-export default App
+export default App;
