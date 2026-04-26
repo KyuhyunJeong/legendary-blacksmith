@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Legendary Blacksmith emblem">
+  <defs>
+    <linearGradient id="forge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8c3a" />
+      <stop offset="100%" stop-color="#ffd27b" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#1a120d" />
+  <path d="M75 172c18-8 41-10 59-4 11 4 22 4 36-2l11 24c-21 9-40 10-59 3-15-5-28-4-42 2z" fill="url(#forge)" />
+  <path d="M145 53l15 15-30 30 16 16 30-30 15 15-45 45-46-46z" fill="#f7ead4" />
+  <circle cx="84" cy="83" r="14" fill="url(#forge)" />
+</svg>
