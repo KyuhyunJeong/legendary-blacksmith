@@ -113,6 +113,67 @@ export const WEAPON_DESCRIPTIONS = [
   '이것은 검도, 창도, 망치도 아니다. 대장장이가 처음 동굴에서 보았던 작은 불씨가 모든 시대와 모든 신화를 지나 다시 돌아온 모습이다. 성경에는 불이 붙었으나 타서 사라지지 않는 떨기나무가 등장한다. 그 불꽃은 태우지만 소멸시키지 않고, 빛나지만 스스로를 잃지 않는다. 태초의 불꽃은 어떤 힘으로도 부술 수 없다. 신들의 무기조차 녹이고, 용의 송곳니조차 재로 만들며, 세계수의 뿌리마저 말라붙는 순간에도 이 불꽃만은 꺼지지 않는다. 대장장이는 마지막에 깨닫는다. 자신이 평생 만든 것은 무기가 아니었다. 불꽃을 담을 그릇이었다. 그가 죽더라도 불꽃은 사라지지 않는다. 왕국이 무너지고, 신화가 잊히고, 별들이 식어도 어딘가의 어둠 속에서 작은 빛으로 남아 다음 대장장이를 기다릴 것이다. 모든 전설의 시작. 모든 창조의 끝. 그리고 다시 시작될 첫 번째 불씨.', // 50
 ];
 
+// ─── English weapon lore (index = enhancement level) ────────────────────────
+export const WEAPON_DESCRIPTIONS_EN = [
+  // 0 – Legacy
+  'A starting stage excluded from the records. The journey begins from +1.',
+  // Tier 1 – Ancient Dawn (Lv 1–10)
+  'A cracked stone fragment from the riverside. The most primal survival tool — humanity\'s first weapon.',
+  'A blade carved from a great beast\'s bone. Hunters learned survival with this in hand.',
+  'A primitive spear with a fire-hardened tip. Enabled humanity\'s first coordinated hunts.',
+  'A heavy stone lashed to a wooden shaft. Simple, yet devastating.',
+  'A bow of sinew and flexible wood. Taught humanity to take life from a distance.',
+  'A razor-sharp blade of volcanic glass. Among the sharpest weapons before the bronze age.',
+  'A rough axe from inter-tribal warfare. Old bloodstains still mark the shaft.',
+  'A long spear paired with a hide shield. Marked the dawn of organized combat formations.',
+  'The first metal weapon born of fire and ore. From this moment, civilization grew more ruthless.',
+  'An early bronze sword wielded by kings and warriors. The weapon that ruled the dawn of civilization.',
+  // Tier 2 – Iron Empire (Lv 11–20)
+  'The dark metal that dethroned bronze. Made cheaper, stronger, and in far greater numbers.',
+  'The standard weapon of the imperial legions. Discipline and formation overpowered brute strength.',
+  'Built to repel cavalry from a distance. Its true power lay within tight battle formations.',
+  'A heavy axe wielded by mounted warriors. Made cavalry charges all the more devastating.',
+  'Only the trained archer could wield this. Capable of turning the tide of battle from afar.',
+  'As armor grew stronger, swords met their limit. This weapon crushed bone and plate alike.',
+  'Designed for full-speed cavalry charges. A single charge could shatter an entire battle line.',
+  'Its bolts pierced iron plate from range. Even those behind castle walls lived in fear.',
+  'A massive two-handed sword that commanded awe on the battlefield and the execution block alike.',
+  'A sword that symbolized honor and loyalty. The pinnacle of the iron age — and of chivalry itself.',
+  // Tier 3 – Rune Fragments: Folklore (Lv 21–30)
+  'The dokkaebi\'s club is said to grant wishes. Yet those who wield it feel not desire — but the urge to destroy.',
+  'A spirit flame is etched into the blade. It glows in darkness, shifting color with the wielder\'s emotions.',
+  'A fox must live a thousand years to become human. This dagger holds that millennium of cunning and beauty — and the curse of nine tails.',
+  'The oni of legend devours the living. This mace was born from the warrior who slew one. Heavy enough to split a ghost.',
+  'Under the full moon this blade shines blue. Forged from silver and beast\'s claw — it tears the line between man and monster.',
+  'A blade that grows stronger as it drinks blood. Crafted from a centuries-old vampire\'s fang. Sharpest at midnight.',
+  'The headless knight rides carrying his own head. If death feeds on fear, this axe is fear itself. The knight\'s curse is inscribed on the edge.',
+  'In Irish legend, a banshee\'s wail foretells death. On the night this sickle cries, the victor of battle is already decided.',
+  'The kraken swallows ships whole. This harpoon was forged by the legendary sailor who speared straight through its tentacle.',
+  'A sword forged from the bones of an ancient dragon. The dragon\'s last flame still burns within. Wounds from this blade never heal.',
+  // Tier 4 – Age of Heroes (Lv 31–40)
+  'The legendary outlaw of medieval England. Robbed the rich and gave to the poor, leaving Sherwood full of songs.',
+  'A seventeen-year-old peasant girl who rallied France at Orléans and broke the siege in just nine days.',
+  'Japan\'s most celebrated swordsman. Over 60 recorded duels, never defeated. His last fight was won with a wooden sword.',
+  'At Thermopylae, 300 Spartans held back hundreds of thousands for days. The enduring symbol of impossible resistance.',
+  'The legendary king who united a fractured Britain. Drew the sword from the stone and proved his right to rule.',
+  'United the scattered Mongol tribes and built the largest contiguous land empire in history. His cavalry covered hundreds of miles a day.',
+  'At Stirling Bridge, used terrain to destroy a far larger English army. Remained a symbol of freedom even in defeat.',
+  'In the chaos of the Three Kingdoms, he charged alone and cut down the enemy general. Now worshipped as a god of war.',
+  'Unified Greece in his twenties, toppled the Persian Empire, and marched to India. One of history\'s fastest conquests.',
+  'At Myeongnyang, 13 ships defeated over 133 enemy warships. Never once defeated in battle — the last legend of a mortal man.',
+  // Tier 5 – Realm of Myth (Lv 41–50)
+  'Odin\'s spear that never misses. The blacksmith learned: a god\'s weapon is not fearsome for its strength — but for never breaking the rules of the world.',
+  'Poseidon\'s trident — one strike splits the earth, and the sea opens a path. Not a weapon, but the power to move the boundaries of the world itself.',
+  'Born from the light of Ra. It does not cut darkness — it removes the space where darkness can exist. Each dawn, this blade drives chaos back once more.',
+  'The huntress\'s bow bent from moonlight. Its arrows seek not flesh, but the faintest weakness hidden in fate. Where the sunblade shines, this bow aims into silence.',
+  'Hades\' scythe guards the line between the living and the dead. Not destruction — order. No soul whose name is carved here ever returns.',
+  'The archangel\'s sword that divides good from evil. Not mere light — a judgment. It pierces a wavering heart before the hardest armor.',
+  'Thor\'s hammer that always returns to his hand. Mountains crumble, giants fall. But its true power was the unbreakable return — even as the world collapsed.',
+  'A sword forged from a branch of Yggdrasil, the world-tree. Wood and metal, alive yet eternal. Its edge holds the grain of life and death, beginning and end.',
+  'The fang of an ancient dragon that devoured stars. All draconic legend — Eastern and Norse alike — condensed into a single relic.',
+  'Not a sword, a spear, or a hammer. The small flame the blacksmith first found in a cave, returned through every age and every myth. It cannot be shattered. When the gods\' weapons melt and the world-tree withers, this flame endures — waiting in some distant dark for the next blacksmith to begin.',
+];
+
 export const STORY_PHASES = {
   phase0: {
     key: 'phase0',

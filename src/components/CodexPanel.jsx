@@ -5,81 +5,146 @@ import {
   fragmentRequirements,
   swordSacrificeRequired,
   protectionRequired,
+  sellPrice,
 } from '../utils/formulas.js';
-import { FRAGMENT_LABELS, WEAPON_DESCRIPTIONS, WEAPON_NAMES } from '../constants/gameConfig.js';
+import {
+  FRAGMENT_LABELS,
+  WEAPON_DESCRIPTIONS,
+  WEAPON_DESCRIPTIONS_EN,
+  WEAPON_NAMES,
+} from '../constants/gameConfig.js';
 import { getWeaponSpriteStyle, getRarityKey } from '../utils/weaponAssets.js';
 
+function parseName(raw = '') {
+  const parts = raw.split(' / ');
+  return {
+    ko: parts[0]?.trim() ?? '???',
+    en: parts[1]?.trim() ?? parts[0]?.trim() ?? '???',
+  };
+}
+
 const ZONE_FILTERS = [
-  { value: 'all', label: '전체 구간' },
-  { value: 'z1', label: '1-10' },
-  { value: 'z2', label: '11-20' },
-  { value: 'z3', label: '21-30' },
-  { value: 'z4', label: '31-40' },
-  { value: 'z5', label: '41-50' },
+  { value: 'all', ko: '전체 구간',  en: 'All Zones' },
+  { value: 'z1',  ko: '1-10',       en: '1–10' },
+  { value: 'z2',  ko: '11-20',      en: '11–20' },
+  { value: 'z3',  ko: '21-30',      en: '21–30' },
+  { value: 'z4',  ko: '31-40',      en: '31–40' },
+  { value: 'z5',  ko: '41-50',      en: '41–50' },
 ];
 
 const RARITY_FILTERS = [
-  { value: 'all', label: '전체 희귀도' },
-  { value: 'common', label: '낡은 병기' },
-  { value: 'rare', label: '강철 병기' },
-  { value: 'epic', label: '룬 병기' },
-  { value: 'legendary', label: '영웅 병기' },
-  { value: 'mythic', label: '신화 병기' },
+  { value: 'all',       ko: '전체 희귀도', en: 'All' },
+  { value: 'common',    ko: '낡은 병기',   en: 'Ancient' },
+  { value: 'rare',      ko: '강철 병기',   en: 'Iron' },
+  { value: 'epic',      ko: '룬 병기',     en: 'Rune' },
+  { value: 'legendary', ko: '영웅 병기',   en: 'Hero' },
+  { value: 'mythic',    ko: '신화 병기',   en: 'Mythic' },
 ];
 
 export default function CodexPanel({ maxSuccessLevel, onClose }) {
-  const unlockedMax = Math.max(0, Math.min(50, maxSuccessLevel ?? 0));
-  const nextPreviewLevel = unlockedMax < 50 ? unlockedMax + 1 : null;
+  const [lang, setLang] = useState('ko');
   const [zoneFilter, setZoneFilter] = useState('all');
   const [rarityFilter, setRarityFilter] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [flipped, setFlipped] = useState(new Set());
+
+  const t = lang === 'ko' ? {
+    title:      '무기 도감',
+    highest:    '강화 성공 최고 단계',
+    zone:       '구간',
+    rarity:     '희귀도',
+    order:      '레벨 오름차순',
+    orderLabel: '정렬',
+    empty:      '현재 필터 조건에 맞는 기록이 없습니다.',
+    next:       '다음 도전',
+    chronicle:  '전승 기록',
+    back:       '← 돌아가기',
+    flipHint:   '전승 기록 →',
+    successRate:'성공률',
+    cost:       '강화 비용',
+    shields:    '방지권',
+    sellCur:    '현재 판매가',
+    sellNext:   '다음 판매가',
+    mats:       '필요 재료',
+    sword:      '검',
+    consume:    '소모',
+    noRecord:   '이 검에 대한 기록은 전해지지 않는다.',
+  } : {
+    title:      'Weapon Codex',
+    highest:    'Highest Enhancement',
+    zone:       'Zone',
+    rarity:     'Rarity',
+    order:      'Level Ascending',
+    orderLabel: 'Order',
+    empty:      'No weapons match the current filters.',
+    next:       'Next Target',
+    chronicle:  'Chronicle',
+    back:       '← Back',
+    flipHint:   'Chronicle →',
+    successRate:'Success',
+    cost:       'Cost',
+    shields:    'Shields',
+    sellCur:    'Sell (cur)',
+    sellNext:   'Sell (next)',
+    mats:       'Materials',
+    sword:      'Sword',
+    consume:    'req.',
+    noRecord:   'No records found for this weapon.',
+  };
+
+  function toggleFlip(level) {
+    setFlipped((prev) => {
+      const next = new Set(prev);
+      if (next.has(level)) next.delete(level);
+      else next.add(level);
+      return next;
+    });
+  }
+
+  const unlockedMax = Math.max(0, Math.min(50, maxSuccessLevel ?? 0));
+  const nextPreviewLevel = unlockedMax < 50 ? unlockedMax + 1 : null;
 
   const filteredLevels = useMemo(() => {
     const records = [];
     for (let level = 1; level <= unlockedMax; level += 1) {
-      records.push({
-        level,
-        zone: getZoneBucket(level),
-        rarity: getRarityKey(level),
-        isPreview: false,
-      });
+      records.push({ level, zone: getZoneBucket(level), rarity: getRarityKey(level), isPreview: false });
     }
     if (nextPreviewLevel) {
-      records.push({
-        level: nextPreviewLevel,
-        zone: getZoneBucket(nextPreviewLevel),
-        rarity: getRarityKey(nextPreviewLevel),
-        isPreview: true,
-      });
+      records.push({ level: nextPreviewLevel, zone: getZoneBucket(nextPreviewLevel), rarity: getRarityKey(nextPreviewLevel), isPreview: true });
     }
-
-    const visible = records.filter((item) => {
-      if (zoneFilter !== 'all' && item.zone !== zoneFilter) return false;
-      if (rarityFilter !== 'all' && item.rarity !== rarityFilter) return false;
-      return true;
-    });
-
-    // Codex order is fixed to ascending level.
-    visible.sort((a, b) => a.level - b.level);
-
-    return visible;
+    return records
+      .filter((item) => {
+        if (zoneFilter !== 'all' && item.zone !== zoneFilter) return false;
+        if (rarityFilter !== 'all' && item.rarity !== rarityFilter) return false;
+        return true;
+      })
+      .sort((a, b) => a.level - b.level);
   }, [nextPreviewLevel, rarityFilter, unlockedMax, zoneFilter]);
 
   return (
     <div className="panel-overlay" onClick={onClose}>
       <aside className="panel-box codex-panel" onClick={(e) => e.stopPropagation()}>
         <div className="panel-header">
-          <h2>무기 도감</h2>
-          <button className="panel-close" onClick={onClose}>✕</button>
+          <h2>{t.title}</h2>
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+            <button
+              className={`codex-lang-btn${lang === 'ko' ? ' is-active' : ''}`}
+              onClick={() => setLang('ko')}
+            >KO</button>
+            <button
+              className={`codex-lang-btn${lang === 'en' ? ' is-active' : ''}`}
+              onClick={() => setLang('en')}
+            >EN</button>
+            <button className="panel-close" onClick={onClose}>✕</button>
+          </div>
         </div>
 
         <p className="codex-summary">
-          현재 강화 성공 최고 단계: <strong>+{unlockedMax}</strong>
+          {t.highest}: <strong>+{unlockedMax}</strong>
         </p>
 
         <div className="codex-controls">
           <div className="codex-filter-group">
-            <span className="codex-filter-title">구간</span>
+            <span className="codex-filter-title">{t.zone}</span>
             <div className="codex-chip-row">
               {ZONE_FILTERS.map((opt) => (
                 <button
@@ -88,14 +153,14 @@ export default function CodexPanel({ maxSuccessLevel, onClose }) {
                   className={`codex-chip ${zoneFilter === opt.value ? 'is-active' : ''}`}
                   onClick={() => setZoneFilter(opt.value)}
                 >
-                  {opt.label}
+                  {opt[lang]}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="codex-filter-group">
-            <span className="codex-filter-title">희귀도</span>
+            <span className="codex-filter-title">{t.rarity}</span>
             <div className="codex-chip-row">
               {RARITY_FILTERS.map((opt) => (
                 <button
@@ -104,23 +169,21 @@ export default function CodexPanel({ maxSuccessLevel, onClose }) {
                   className={`codex-chip ${rarityFilter === opt.value ? 'is-active' : ''}`}
                   onClick={() => setRarityFilter(opt.value)}
                 >
-                  {opt.label}
+                  {opt[lang]}
                 </button>
               ))}
             </div>
           </div>
 
           <div className="codex-filter-group codex-filter-order">
-            <span className="codex-filter-title">정렬</span>
-            <span className="codex-order-badge">레벨 오름차순 고정</span>
+            <span className="codex-filter-title">{t.orderLabel}</span>
+            <span className="codex-order-badge">{t.order}</span>
           </div>
         </div>
 
         <div className="codex-list">
           {filteredLevels.length === 0 && (
-            <div className="codex-empty">
-              현재 필터 조건에 맞는 기록이 없습니다.
-            </div>
+            <div className="codex-empty">{t.empty}</div>
           )}
 
           {filteredLevels.map(({ level, isPreview }) => {
@@ -128,121 +191,104 @@ export default function CodexPanel({ maxSuccessLevel, onClose }) {
             const fragEntries = Object.entries(fragReqMap);
             const sacrifices = swordSacrificeRequired(level);
             const spriteStyle = !isPreview ? getWeaponSpriteStyle(level) : null;
+            const isFlipped = flipped.has(level);
+
+            const { ko: nameKo, en: nameEn } = parseName(WEAPON_NAMES[level] ?? '');
+            const weaponName = lang === 'ko' ? nameKo : nameEn;
+
+            const lore = lang === 'ko'
+              ? (WEAPON_DESCRIPTIONS[level] ?? t.noRecord)
+              : (WEAPON_DESCRIPTIONS_EN[level] ?? t.noRecord);
+
+            const curSell = sellPrice(level);
+            const nextSell = level < 50 ? sellPrice(level + 1) : null;
 
             return (
               <article
                 key={level}
-                className={`codex-card codex-rarity-${getRarityKey(level)} ${isPreview ? 'codex-preview' : ''}`}
-                onClick={() => !isPreview && setSelectedLevel(level)}
+                className={`codex-card codex-rarity-${getRarityKey(level)} ${isPreview ? 'codex-preview' : ''} ${isFlipped ? 'is-flipped' : ''}`}
+                onClick={() => !isPreview && toggleFlip(level)}
                 role={!isPreview ? 'button' : undefined}
                 tabIndex={!isPreview ? 0 : undefined}
                 onKeyDown={(e) => {
                   if (isPreview) return;
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setSelectedLevel(level);
-                  }
+                  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFlip(level); }
                 }}
               >
-                <div className="codex-card-head">
-                  <div className="codex-thumb" aria-hidden="true">
-                    {spriteStyle ? (
-                      <div className="codex-sprite" style={spriteStyle} />
-                    ) : (
-                      <span className="codex-fallback">{isPreview ? '???' : '⚔️'}</span>
-                    )}
-                  </div>
+                <div className="codex-card-inner">
 
-                  <div className="codex-title-wrap">
-                    <div className="codex-title-row">
-                      <h3>{WEAPON_NAMES[level] ?? `+${level} 검`}</h3>
-                      <span className="codex-level">+{level}</span>
-                      {isPreview && <span className="codex-next-tag">다음 도전</span>}
+                  {/* ── FRONT ── */}
+                  <div className="codex-card-front">
+                    <div className="codex-card-head">
+                      <div className="codex-thumb" aria-hidden="true">
+                        {spriteStyle ? (
+                          <div className="codex-sprite" style={spriteStyle} />
+                        ) : (
+                          <span className="codex-fallback">{isPreview ? '???' : '⚔️'}</span>
+                        )}
+                      </div>
+                      <div className="codex-title-wrap">
+                        <div className="codex-title-row">
+                          <h3 className="codex-weapon-name">{weaponName}</h3>
+                          {isPreview && <span className="codex-next-tag">{t.next}</span>}
+                          {!isPreview && <span className="codex-flip-hint">{t.flipHint}</span>}
+                        </div>
+                      </div>
                     </div>
-                    <p className="codex-desc">{WEAPON_DESCRIPTIONS[level] ?? '기록이 없습니다.'}</p>
-                  </div>
-                </div>
-
-                <div className="codex-stats">
-                  <span>성공률 <strong>{successRate(level)}%</strong></span>
-                  <span>강화 비용 <strong>{enhanceCost(level).toLocaleString()} G</strong></span>
-                  <span>필요 파손 방지권 <strong>{protectionRequired(level)}개</strong></span>
-                </div>
-
-                {(fragEntries.length > 0 || sacrifices.length > 0) && (
-                  <div className="codex-mats">
-                    <span className="codex-mats-label">필요 재료</span>
-                    {fragEntries.map(([key, req]) => (
-                      <span key={`${level}-${key}`} className="codex-mat-chip">
-                        {FRAGMENT_LABELS[key]} ×{req}
-                      </span>
-                    ))}
-                    {sacrifices.map((reqLv) => (
-                      <span key={`${level}-sac-${reqLv}`} className="codex-mat-chip codex-mat-sword">
-                        검 +{reqLv} 소모
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </article>
-            );
-          })}
-        </div>
-
-        {selectedLevel && (
-          <div className="codex-zoom-overlay" onClick={() => setSelectedLevel(null)}>
-            <div className="codex-zoom-box" onClick={(e) => e.stopPropagation()}>
-              <div className="journal-zoom-head">
-                <h3>{WEAPON_NAMES[selectedLevel] ?? `+${selectedLevel} 검`}</h3>
-                <button className="panel-close" onClick={() => setSelectedLevel(null)}>✕</button>
-              </div>
-
-              <div className="codex-zoom-body">
-                <div className={`codex-zoom-thumb codex-rarity-${getRarityKey(selectedLevel)}`}>
-                  {getWeaponSpriteStyle(selectedLevel) ? (
-                    <div className="codex-zoom-sprite" style={getWeaponSpriteStyle(selectedLevel)} />
-                  ) : (
-                    <span className="codex-fallback">⚔️</span>
-                  )}
-                </div>
-
-                <div className="codex-zoom-copy">
-                  <div className="codex-title-row">
-                    <h3>{WEAPON_NAMES[selectedLevel] ?? `+${selectedLevel} 검`}</h3>
-                    <span className="codex-level">+{selectedLevel}</span>
-                  </div>
-                  <p className="codex-zoom-desc">{WEAPON_DESCRIPTIONS[selectedLevel] ?? '기록이 없습니다.'}</p>
-                  <div className="codex-stats">
-                    <span>성공률 <strong>{successRate(selectedLevel)}%</strong></span>
-                    <span>강화 비용 <strong>{enhanceCost(selectedLevel).toLocaleString()} G</strong></span>
-                    <span>필요 파손 방지권 <strong>{protectionRequired(selectedLevel)}개</strong></span>
-                  </div>
-
-                  {(() => {
-                    const fragEntries = Object.entries(fragmentRequirements(selectedLevel));
-                    const sacrifices = swordSacrificeRequired(selectedLevel);
-                    if (fragEntries.length === 0 && sacrifices.length === 0) return null;
-                    return (
+                    <div className="codex-stats">
+                      <span>{t.successRate} <strong>{successRate(level)}%</strong></span>
+                      <span>{t.cost} <strong>{enhanceCost(level).toLocaleString()} G</strong></span>
+                      <span>{t.shields} <strong>{protectionRequired(level)}</strong></span>
+                    </div>
+                    {(fragEntries.length > 0 || sacrifices.length > 0) && (
                       <div className="codex-mats">
-                        <span className="codex-mats-label">필요 재료</span>
+                        <span className="codex-mats-label">{t.mats}</span>
                         {fragEntries.map(([key, req]) => (
-                          <span key={`zoom-${selectedLevel}-${key}`} className="codex-mat-chip">
+                          <span key={`${level}-${key}`} className="codex-mat-chip">
                             {FRAGMENT_LABELS[key]} ×{req}
                           </span>
                         ))}
                         {sacrifices.map((reqLv) => (
-                          <span key={`zoom-sac-${selectedLevel}-${reqLv}`} className="codex-mat-chip codex-mat-sword">
-                            검 +{reqLv} 소모
+                          <span key={`${level}-sac-${reqLv}`} className="codex-mat-chip codex-mat-sword">
+                            {t.sword} +{reqLv} {t.consume}
                           </span>
                         ))}
                       </div>
-                    );
-                  })()}
+                    )}
+                  </div>
+
+                  {/* ── BACK (전승 기록 / Chronicle) ── */}
+                  <div className="codex-card-back">
+                    <div className="codex-back-header">
+                      <div className="codex-thumb" aria-hidden="true">
+                        {spriteStyle ? (
+                          <div className="codex-sprite" style={spriteStyle} />
+                        ) : (
+                          <span className="codex-fallback">⚔️</span>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="codex-weapon-name">{weaponName}</h3>
+                        <p className="codex-back-subtitle">{t.chronicle}</p>
+                      </div>
+                    </div>
+                    <div className="codex-back-stats">
+                      <span>{t.successRate} <strong>{successRate(level)}%</strong></span>
+                      <span>{t.cost} <strong>{enhanceCost(level).toLocaleString()} G</strong></span>
+                      <span>{t.sellCur} <strong>{curSell.toLocaleString()} G</strong></span>
+                      {nextSell !== null && (
+                        <span>{t.sellNext} <strong>{nextSell.toLocaleString()} G</strong></span>
+                      )}
+                    </div>
+                    <p className="codex-back-lore">{lore}</p>
+                    <p className="codex-flip-hint codex-flip-hint--back">{t.back}</p>
+                  </div>
+
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
+              </article>
+            );
+          })}
+        </div>
       </aside>
     </div>
   );

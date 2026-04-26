@@ -17,6 +17,7 @@ import ShopPanel       from '../components/ShopPanel.jsx';
 import CodexPanel      from '../components/CodexPanel.jsx';
 import StoryJournalPanel from '../components/StoryJournalPanel.jsx';
 import CheatPanel      from '../components/CheatPanel.jsx';
+import HelpPanel       from '../components/HelpPanel.jsx';
 import StoryPhaseModal from '../components/StoryPhaseModal.jsx';
 import Toast           from '../components/Toast.jsx';
 
@@ -108,7 +109,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     return migrated;
   }
   const [state,    setState]    = useState(() => migrateState(initialState));
-  const [panel,    setPanel]    = useState(null);   // null | 'inventory' | 'shop' | 'codex' | 'journal' | 'cheat'
+  const [panel,    setPanel]    = useState(null);   // null | 'inventory' | 'shop' | 'codex' | 'journal' | 'cheat' | 'help'
   const [toasts,   setToasts]   = useState([]);
   const [modal,    setModal]    = useState(null);   // null | { type, data }
   const [enhanceWarning, setEnhanceWarning] = useState(null); // null | { nextLevel, reqTickets, ticketCount, missingTickets }
@@ -470,9 +471,10 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
         activeBoost={state.activeBoost}
         protectionTickets={state.protectionTickets ?? 0}
         onReturnMenu={onReturnMenu}
+        onOpenPanel={setPanel}
+        cheatUnlocked={state.cheatUnlocked ?? false}
         onSecretPressStart={handleCheatLongPressStart}
         onSecretPressEnd={handleCheatLongPressEnd}
-        key={boostTick}
       />
 
       <div className="game-body">
@@ -549,6 +551,10 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           onOpenStoryPhase={(phaseKey) => setJournalStoryPhase(phaseKey)}
           onClose={() => setPanel(null)}
         />
+      )}
+
+      {panel === 'help' && (
+        <HelpPanel onClose={() => setPanel(null)} />
       )}
 
       {panel === 'cheat' && state.cheatUnlocked && (
@@ -681,41 +687,6 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           showHideFutureToggle={false}
           onClose={() => setJournalStoryPhase(null)}
         />
-      )}
-
-      {/* Inventory FAB */}
-      <button
-        className="inv-fab"
-        onClick={() => setPanel(panel === 'inventory' ? null : 'inventory')}
-        title="보관함"
-      >
-        📦 보관함
-      </button>
-
-      <button
-        className="codex-fab"
-        onClick={() => setPanel(panel === 'codex' ? null : 'codex')}
-        title="도감"
-      >
-        📖 도감
-      </button>
-
-      <button
-        className="journal-fab"
-        onClick={() => setPanel(panel === 'journal' ? null : 'journal')}
-        title="대장장이의 일기"
-      >
-        📜 일기
-      </button>
-
-      {state.cheatUnlocked && (
-        <button
-          className="cheat-fab"
-          onClick={() => setPanel(panel === 'cheat' ? null : 'cheat')}
-          title="치트 모드"
-        >
-          🧪 치트
-        </button>
       )}
 
       <Toast messages={toasts} onDismiss={dismissToast} />

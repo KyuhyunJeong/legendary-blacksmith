@@ -7,6 +7,7 @@ export default function MainMenuScreen({ username, onPlay, onLogout }) {
   const [saves, setSaves] = useState(() => listSaves(username));
   const [confirmDelete, setConfirmDelete] = useState(null); // slot number
   const [pendingNewGame, setPendingNewGame] = useState(null);
+  const [lang, setLang] = useState('ko'); // 'ko' | 'en'
 
   function refreshSaves() {
     setSaves(listSaves(username));
@@ -57,11 +58,47 @@ export default function MainMenuScreen({ username, onPlay, onLogout }) {
   const usedSlots  = saves.filter(Boolean).length;
   const allFull    = usedSlots >= MAX_SAVE_SLOTS;
 
+  const t = lang === 'ko' ? {
+    title:     '전설의 대장장이',
+    slot:      (n) => `슬롯 ${n}`,
+    emptySlot: '빈 슬롯',
+    noSword:   '검 없음',
+    load:      '불러오기',
+    delete:    '삭제',
+    newGame:   '새 게임 시작',
+    slotsFull: '슬롯이 꽉 찼습니다',
+    logout:    '로그아웃',
+    confirmMsg:(n) => `슬롯 ${n}을 정말 삭제하시겠습니까?`,
+    cancel:    '취소',
+  } : {
+    title:     'Legendary Blacksmith',
+    slot:      (n) => `Slot ${n}`,
+    emptySlot: 'Empty',
+    noSword:   'No weapon',
+    load:      'Load',
+    delete:    'Delete',
+    newGame:   'New Game',
+    slotsFull: 'All Slots Full',
+    logout:    'Logout',
+    confirmMsg:(n) => `Delete Slot ${n}?`,
+    cancel:    'Cancel',
+  };
+
+  function parseName(fullName) {
+    if (!fullName) return '';
+    const parts = fullName.split(' / ');
+    if (lang === 'en' && parts[1]) return parts[1];
+    return parts[0];
+  }
+
   return (
     <div className="menu-bg">
+      <div className="menu-lang-toggle">
+        <button className={`lang-btn ${lang === 'ko' ? 'active' : ''}`} onClick={() => setLang('ko')}>KO</button>
+        <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
+      </div>
       <div className="menu-card">
-        <h1 className="menu-title">전설의 대장장이</h1>
-        <p className="menu-user">반갑습니다, <strong>{username}</strong>님</p>
+        <h1 className="menu-title">{t.title}</h1>
 
         <section className="save-slots">
           {saves.map((save, i) => {
@@ -69,31 +106,33 @@ export default function MainMenuScreen({ username, onPlay, onLogout }) {
             const displaySword = save ? getHighestSword(save) : null;
             return (
               <div key={slot} className={`save-slot ${save ? 'occupied' : 'empty'}`}>
-                <div className="slot-label">슬롯 {slot}</div>
+                <div className="slot-label">
+                  <span>{t.slot(slot)}</span>
+                  {save && <span className="slot-label-gold">{(save.gold ?? 0).toLocaleString()} G</span>}
+                </div>
                 {save ? (
                   <>
                     <div className="slot-info">
                       <span className="slot-sword">
                         {displaySword
-                          ? `${displaySword.name} +${displaySword.level}`
-                          : '검 없음'}
+                          ? `${parseName(displaySword.name)} +${displaySword.level}`
+                          : t.noSword}
                       </span>
-                      <span className="slot-gold">Gold {(save.gold ?? 0).toLocaleString()}</span>
                     </div>
                     <div className="slot-actions">
                       <button className="btn-primary btn-sm" onClick={() => handleLoad(slot)}>
-                        불러오기
+                        {t.load}
                       </button>
                       <button
                         className="btn-ghost btn-sm btn-danger"
                         onClick={() => setConfirmDelete(slot)}
                       >
-                        삭제
+                        {t.delete}
                       </button>
                     </div>
                   </>
                 ) : (
-                  <p className="slot-empty-text">빈 슬롯</p>
+                  <p className="slot-empty-text">{t.emptySlot}</p>
                 )}
               </div>
             );
@@ -105,24 +144,24 @@ export default function MainMenuScreen({ username, onPlay, onLogout }) {
           onClick={handleNewGame}
           disabled={allFull}
         >
-          {allFull ? '슬롯이 꽉 찼습니다' : '새 게임 시작'}
+          {allFull ? t.slotsFull : t.newGame}
         </button>
 
         <button className="btn-ghost btn-wide" onClick={handleLogout}>
-          로그아웃
+          {t.logout}
         </button>
       </div>
 
       {confirmDelete !== null && (
         <div className="modal-overlay" onClick={() => setConfirmDelete(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <p>슬롯 {confirmDelete}을 정말 삭제하시겠습니까?</p>
+            <p>{t.confirmMsg(confirmDelete)}</p>
             <div className="modal-actions">
               <button className="btn-primary btn-danger" onClick={handleDeleteConfirm}>
-                삭제
+                {t.delete}
               </button>
               <button className="btn-ghost" onClick={() => setConfirmDelete(null)}>
-                취소
+                {t.cancel}
               </button>
             </div>
           </div>
