@@ -1,4 +1,4 @@
-// ─── Weapon name & description table (index = enhancement level) ────────────
+﻿// ─── Weapon name & description table (index = enhancement level) ────────────
 export const WEAPON_NAMES = [
   '미사용 / Unused',                            //  0 (legacy only)
   '날카로운 돌조각 / Sharp Stone Shard',       //  1
@@ -180,6 +180,7 @@ export const STORY_PHASES = {
     title: '불꽃의 선택',
     subtitle: 'Chosen by Flame',
     caption: '게임 첫 실행 직후',
+    captionEn: 'At the very start of the game',
     illustrations: ['동굴', '맹수', '혹독한 자연', '불 없는 밤'],
     monologue: [
       '어린 소년은 맹수와 추위 속에서 동굴로 숨어든다.',
@@ -188,7 +189,15 @@ export const STORY_PHASES = {
       '마치 누군가를 기다렸던 것처럼 소년 앞에서 조용히 타오른다.',
       '소년이 손을 뻗자, 불꽃은 그를 태우지 않는다.',
     ],
+    monologueEn: [
+      'A young boy takes refuge in a cave, fleeing beasts and bitter cold.',
+      'There he discovers a flame unlike any other.',
+      'It does not burn wood. It does not melt stone.',
+      'It burns quietly before him, as if it had been waiting.',
+      'When he reaches out, the flame does not consume him.',
+    ],
     world: '처음 발견된 불꽃은 도구가 아니라 선택이었다. 대장장이는 불을 발견한 것이 아니라, 불이 대장장이를 선택했다.',
+    worldEn: 'The first flame was not a tool — it was a choice. The blacksmith did not find the fire; the fire chose the blacksmith.',
     core: '대장장이가 불을 발견한 것이 아니라 불이 대장장이를 선택함',
     after: '첫 불 발견 → 게임 시작',
   },
@@ -197,6 +206,7 @@ export const STORY_PHASES = {
     title: '고대의 여명',
     subtitle: 'Dawn of Civilization',
     caption: '1번 무기 해금 직전',
+    captionEn: 'Just before the first weapon is forged',
     illustrations: ['최초의 불', '석기', '청동'],
     monologue: [
       '소년은 불꽃의 힘으로 인류 최초의 무기를 만들기 시작한다.',
@@ -204,7 +214,14 @@ export const STORY_PHASES = {
       '사람들은 그를 두려워하면서도 의지한다.',
       '문명이 시작된다.',
     ],
+    monologueEn: [
+      'With the power of the flame, the boy begins forging humanity\'s first weapons.',
+      'Stone, bone, wood, bronze.',
+      'People fear him — and yet they depend on him.',
+      'Civilization begins.',
+    ],
     world: '생존을 위한 도구는 공동체를 지키는 무기가 되었고, 무기는 문명의 시작을 알렸다.',
+    worldEn: 'Tools born for survival became weapons to protect the tribe. Weapons heralded the dawn of civilization.',
     core: '생존 → 문명',
     playRange: 'Weapon 1~10',
   },
@@ -213,6 +230,7 @@ export const STORY_PHASES = {
     title: '철의 제국',
     subtitle: 'Iron Dominion',
     caption: '10번 무기 완성 → 11번 해금 직전',
+    captionEn: 'After the 10th weapon — before the 11th is unlocked',
     illustrations: ['대규모 제국 대장간', '군단병', '기사'],
     monologue: [
       '왕국들은 더 강한 무기를 원한다.',
@@ -220,7 +238,14 @@ export const STORY_PHASES = {
       '그가 만든 무기로 제국이 세워지고, 동시에 수많은 전쟁도 시작된다.',
       '그는 처음으로 자신의 불꽃을 의심한다.',
     ],
-    world: '창조의 불꽃은 번영과 파괴를 함께 낳았다. 대장장이의 망치 소리는 영광과 비명 사이에서 울렸다.',
+    monologueEn: [
+      'Kingdoms hunger for stronger weapons.',
+      'His forge grows; kings and armies come to him.',
+      'Empires are built with his blades — and countless wars begin with them.',
+      'For the first time, he doubts his own flame.',
+    ],
+    world: '생성의 불꽃은 번영과 파괴를 함께 낳았다. 대장장이의 망치 소리는 영광과 비명 사이에서 울렸다.',
+    worldEn: 'The flame of creation gave birth to both prosperity and destruction. The blacksmith\'s hammer rang between glory and agony.',
     core: '창조 → 파괴',
     playRange: 'Weapon 11~20',
   },
@@ -229,6 +254,7 @@ export const STORY_PHASES = {
     title: '이계의 속삭임',
     subtitle: 'Whispers Beyond the Forge',
     caption: '20번 무기 완성 → 21번 해금 직전',
+    captionEn: 'After the 20th weapon — before the 21st is unlocked',
     illustrations: ['기괴한 재료', '괴물 잔해', '민담 속 존재'],
     monologue: [
       '인간의 금속으로는 설명할 수 없는 재료들이 나타난다.',
@@ -236,7 +262,14 @@ export const STORY_PHASES = {
       '전설은 허구가 아니었다.',
       '불꽃은 점점 더 강하게 타오른다.',
     ],
+    monologueEn: [
+      'Materials appear that no human metal can explain.',
+      'Demon horns, vampire fangs, kraken bone, cursed relics.',
+      'Legends were not fiction.',
+      'The flame burns ever stronger.',
+    ],
     world: '현실의 경계가 무너지고 민담이 재료가 되었다. 대장간은 인간 세계와 이계를 잇는 문턱이 된다.',
+    worldEn: 'The boundary of reality crumbled and folklore became raw material. The forge became the threshold between the human world and the beyond.',
     core: '현실 → 초현실',
     playRange: 'Weapon 21~30',
   },
@@ -245,14 +278,22 @@ export const STORY_PHASES = {
     title: '영웅의 시대',
     subtitle: 'Age of Heroes',
     caption: '30번 무기 완성 → 31번 해금 직전',
+    captionEn: 'After the 30th weapon — before the 31st is unlocked',
     illustrations: ['왕', '영웅', '용사'],
     monologue: [
       '역사를 바꾼 영웅들이 찾아온다.',
       '왕, 장군, 전설적 검객.',
       '그는 인간이 어디까지 올라갈 수 있는지 목격한다.',
-      '그러나 그 누구도 불꽃의 진실을 알지 못한다.',
+      '그러나 그 누군도 불꽃의 진실을 알지 못한다.',
+    ],
+    monologueEn: [
+      'Heroes who changed history come to him.',
+      'Kings, generals, legendary swordsmen.',
+      'He witnesses how high humanity can climb.',
+      'Yet none of them know the true secret of the flame.',
     ],
     world: '인간은 신화에 닿을 듯한 높이까지 올라섰다. 그러나 불꽃의 기원은 여전히 침묵 속에 남아 있었다.',
+    worldEn: 'Humanity rose to heights that nearly touched myth. Yet the origin of the flame remained silent still.',
     core: '인간의 정점',
     playRange: 'Weapon 31~40',
   },
@@ -261,6 +302,7 @@ export const STORY_PHASES = {
     title: '신화의 영역',
     subtitle: 'Realm of Myth',
     caption: '40번 무기 완성 → 41번 해금 직전',
+    captionEn: 'After the 40th weapon — before the 41st is unlocked',
     illustrations: ['천상 대장간', '신', '용', '별의 금속'],
     monologue: [
       '신들과 고대 존재들이 그를 부른다.',
@@ -268,7 +310,14 @@ export const STORY_PHASES = {
       '마침내 그는 깨닫는다.',
       '이 불꽃은 인간의 것이 아니었다.',
     ],
+    monologueEn: [
+      'Gods and ancient beings call out to him.',
+      'He melts stars and forges weapons for the divine.',
+      'At last, he understands.',
+      'This flame was never meant for human hands.',
+    ],
     world: '불꽃은 인간의 손에 있었지만 인간의 것이 아니었다. 대장장이는 신화의 중심에서 스스로의 경계를 넘는다.',
+    worldEn: 'The flame was in human hands, but it was never human. At the heart of myth, the blacksmith crosses his own boundaries.',
     core: '인간 초월',
     playRange: 'Weapon 41~50',
   },
@@ -277,6 +326,7 @@ export const STORY_PHASES = {
     title: '마지막 불꽃',
     subtitle: 'The Last Flame',
     caption: '50번 무기 완성 직후',
+    captionEn: 'After the final weapon is completed',
     illustrations: ['붕괴하는 우주 대장간', '완성된 궁극 무기', '늙은 대장장이'],
     monologue: [
       '대장장이는 늙었다.',
@@ -287,7 +337,17 @@ export const STORY_PHASES = {
       '그리고 말없이 어둠 속으로 사라진다.',
       '어딘가에서, 다음 대장장이를 찾기 위해.',
     ],
+    monologueEn: [
+      'The blacksmith is old.',
+      'The gods are gone, the heroes dead, the empires fallen.',
+      'In the final moment, the primordial flame still burns.',
+      'This time, the blacksmith reaches out.',
+      'But the flame leaves his hand.',
+      'And without a word, it fades into the dark.',
+      'Somewhere, searching for the next blacksmith.',
+    ],
     world: '모든 시대는 사라져도 불꽃은 사라지지 않는다. 전설의 끝은 다음 전설의 시작점이 된다.',
+    worldEn: 'Every age passes, but the flame does not. The end of one legend is the beginning of the next.',
     core: '모든 전설은 끝난다. 하지만 불꽃은 언제나 다음 이야기를 기다린다.',
   },
 };
@@ -296,11 +356,19 @@ export const STORY_PHASES = {
 export const ZONE_NAMES = ['worn', 'steel', 'rune', 'ancient', 'legend'];
 
 export const FRAGMENT_LABELS = {
-  worn:    '시원의 불씨 파편',
+  worn:    '사원의 불씨 파편',
   steel:   '제국의 주괴 파편',
   rune:    '민담의 주술 파편',
   ancient: '영웅의 맹세 파편',
   legend:  '신화의 잔광 파편',
+};
+
+export const FRAGMENT_LABELS_EN = {
+  worn:    'Ember Shard',
+  steel:   'Imperial Ingot Shard',
+  rune:    'Folk Rune Shard',
+  ancient: "Hero's Oath Shard",
+  legend:  'Mythic Gleam Shard',
 };
 
 export const ZONE_MULTIPLIERS = [0, 0.3, 0.5, 0.8, 1.2]; // index 0 = zone 1 (no req)

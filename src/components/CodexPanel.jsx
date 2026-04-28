@@ -9,6 +9,7 @@ import {
 } from '../utils/formulas.js';
 import {
   FRAGMENT_LABELS,
+  FRAGMENT_LABELS_EN,
   WEAPON_DESCRIPTIONS,
   WEAPON_DESCRIPTIONS_EN,
   WEAPON_NAMES,
@@ -41,8 +42,7 @@ const RARITY_FILTERS = [
   { value: 'mythic',    ko: '신화 병기',   en: 'Mythic' },
 ];
 
-export default function CodexPanel({ maxSuccessLevel, onClose }) {
-  const [lang, setLang] = useState('ko');
+export default function CodexPanel({ maxSuccessLevel, onClose, lang = 'ko' }) {
   const [zoneFilter, setZoneFilter] = useState('all');
   const [rarityFilter, setRarityFilter] = useState('all');
   const [flipped, setFlipped] = useState(new Set());
@@ -125,17 +125,7 @@ export default function CodexPanel({ maxSuccessLevel, onClose }) {
       <aside className="panel-box codex-panel" onClick={(e) => e.stopPropagation()}>
         <div className="panel-header">
           <h2>{t.title}</h2>
-          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-            <button
-              className={`codex-lang-btn${lang === 'ko' ? ' is-active' : ''}`}
-              onClick={() => setLang('ko')}
-            >KO</button>
-            <button
-              className={`codex-lang-btn${lang === 'en' ? ' is-active' : ''}`}
-              onClick={() => setLang('en')}
-            >EN</button>
-            <button className="panel-close" onClick={onClose}>✕</button>
-          </div>
+          <button className="panel-close" onClick={onClose}>✕</button>
         </div>
 
         <p className="codex-summary">
@@ -245,7 +235,7 @@ export default function CodexPanel({ maxSuccessLevel, onClose }) {
                         <span className="codex-mats-label">{t.mats}</span>
                         {fragEntries.map(([key, req]) => (
                           <span key={`${level}-${key}`} className="codex-mat-chip">
-                            {FRAGMENT_LABELS[key]} ×{req}
+                          {(lang === 'ko' ? FRAGMENT_LABELS : FRAGMENT_LABELS_EN)[key]} ×{req}
                           </span>
                         ))}
                         {sacrifices.map((reqLv) => (

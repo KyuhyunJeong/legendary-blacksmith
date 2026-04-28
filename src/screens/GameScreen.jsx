@@ -6,7 +6,7 @@ import {
   fragmentDropRoll, zoneKey, protectionRequired,
 } from '../utils/formulas.js';
 import {
-  FRAGMENT_LABELS, BASE_STORAGE_CAPACITY, SHOP_ITEMS, STARTING_STATE, WEAPON_NAMES, SELL_FRAGMENT_REWARDS,
+  FRAGMENT_LABELS, FRAGMENT_LABELS_EN, BASE_STORAGE_CAPACITY, SHOP_ITEMS, STARTING_STATE, WEAPON_NAMES, SELL_FRAGMENT_REWARDS,
 } from '../constants/gameConfig.js';
 
 import GoldBar         from '../components/GoldBar.jsx';
@@ -110,6 +110,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
   }
   const [state,    setState]    = useState(() => migrateState(initialState));
   const [panel,    setPanel]    = useState(null);   // null | 'inventory' | 'shop' | 'codex' | 'journal' | 'cheat' | 'help'
+  const [lang,     setLang]     = useState('ko');
   const [toasts,   setToasts]   = useState([]);
   const [modal,    setModal]    = useState(null);   // null | { type, data }
   const [enhanceWarning, setEnhanceWarning] = useState(null); // null | { nextLevel, reqTickets, ticketCount, missingTickets }
@@ -117,7 +118,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
   const [boostTick, setBoostTick] = useState(0);    // force re-render for countdown
   const [storyQueue, setStoryQueue] = useState([]);
   const [journalStoryPhase, setJournalStoryPhase] = useState(null);
-  const [pendingEnhanceToast, setPendingEnhanceToast] = useState(null);
+  const [cardNotif, setCardNotif] = useState(null);
   const startupStoryQueued = useRef(false);
   const cheatLongPressTimerRef = useRef(null);
 
@@ -141,6 +142,11 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
 
   function dismissToast(id) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  function showCardNotif(type, message) {
+    setCardNotif({ type, message });
+    setTimeout(() => setCardNotif(null), 3000);
   }
 
   function update(partial) {
@@ -173,13 +179,11 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     setStoryQueue((prev) => prev.slice(1));
 
     if (dontShowAgain) {
-      pushToast('앞으로 스토리 팝업이 표시되지 않습니다. 도감에서 일러스트와 내용을 확인할 수 있어요.', 'info');
+      pushToast(lang === 'en'
+        ? 'Story popups disabled. Check the Codex for art and content.'
+        : '앞으로 스토리 팝업이 표시되지 않습니다. 도감에서 일러스트와 내용을 확인할 수 있어요.', 'info');
     }
 
-    if ((storyQueue.length ?? 0) <= 1 && pendingEnhanceToast) {
-      pushToast(pendingEnhanceToast, 'success');
-      setPendingEnhanceToast(null);
-    }
   }
 
   function zoneFragKey(level) {
@@ -199,7 +203,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
 
     cheatLongPressTimerRef.current = setTimeout(() => {
       update({ cheatUnlocked: true });
-      pushToast('치트 모드가 해금되었습니다. 우측 하단의 🧪 버튼을 확인하세요.', 'warn');
+      pushToast(lang === 'en' ? 'Cheat mode unlocked. Check the 🧪 button below.' : '치트 모드가 해금되었습니다. 우측 하단의 🧪 버튼을 확인하세요.', 'warn');
       cheatLongPressTimerRef.current = null;
     }, 5000);
   }
@@ -235,7 +239,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     if (!sword) return;
 
     const nextLevel  = sword.level + 1;
-    if (nextLevel > 50) { pushToast('이미 최고 강화 단계입니다.', 'warn'); return; }
+    if (nextLevel > 50) { pushToast(lang === 'en' ? 'Already at max enhancement.' : '이미 최고 강화 단계입니다.', 'warn'); return; }
 
     const fragReqMap = fragmentRequirements(nextLevel);
     const sacrifices = swordSacrificeRequired(nextLevel);
@@ -244,13 +248,13 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
 
     // In cheat ignore mode, enhancement can proceed without gold.
     if (!ignoreRequirements && state.gold < cost) {
-      pushToast(`골드가 부족합니다. (필요: ${cost.toLocaleString()} G)`, 'error'); return;
+      pushToast(lang === 'en' ? `Insufficient gold. (Need: ${cost.toLocaleString()} G)` : `골드가 부족합니다. (필요: ${cost.toLocaleString()} G)`, 'error'); return;
     }
     // Check fragments
     if (!ignoreRequirements) {
       for (const [key, req] of Object.entries(fragReqMap)) {
         if ((state.fragments[key] ?? 0) < req) {
-          pushToast(`${FRAGMENT_LABELS[key]}이 부족합니다. (필요: ${req}개)`, 'error');
+          pushToast(lang === 'en' ? `Not enough ${FRAGMENT_LABELS_EN[key]}. (Need: ${req})` : `${FRAGMENT_LABELS[key]}이 부족합니다. (필요: ${req}개)`, 'error');
           return;
         }
       }
@@ -259,7 +263,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     if (!ignoreRequirements) {
       for (const reqLv of sacrifices) {
         if (!state.storage.some((s) => s.level === reqLv)) {
-          pushToast(`+${reqLv} 검이 보관함에 없습니다.`, 'error'); return;
+          pushToast(lang === 'en' ? `+${reqLv} sword not in storage.` : `+${reqLv} 검이 보관함에 없습니다.`, 'error'); return;
         }
       }
     }
@@ -319,17 +323,12 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
         maxSuccessLevel: Math.max(currentMax, nextLevel),
       });
       enqueueStoryPhases([storyPhase]);
-
-      if (storyPhase) {
-        setPendingEnhanceToast(`🎉 강화 성공! +${nextLevel}`);
-      } else {
-        pushToast(`🎉 강화 성공! +${nextLevel}`, 'success');
-      }
+      showCardNotif('success', lang === 'en' ? `Enhancement success +${nextLevel}` : `강화 성공 +${nextLevel}`);
     } else {
       if (ticketCount >= reqTickets) {
         const remaining = ticketCount - reqTickets;
         update({ gold: newGold, fragments: newFragments, storage: newStorage, protectionTickets: remaining });
-        pushToast(`🛡️ 파손 방지권 발동! 검이 보호되었습니다. (${reqTickets}개 소모 → ${remaining}개 남음)`, 'warn');
+        showCardNotif('warn', lang === 'en' ? `Shield activated. ${reqTickets} used, ${remaining} left.` : `방지권 발동. ${reqTickets}개 소모, ${remaining}개 남음.`);
       } else {
         // Destroy — drop fragments, auto-give free +1
         const dropZoneKey = zoneFragKey(nextLevel);
@@ -346,11 +345,13 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           activeSword: freeSword,
           nextSwordId: freeId + 1,
         });
+        const fragMsg = dropCount > 0
+          ? ` ${lang === 'en' ? FRAGMENT_LABELS_EN[dropZoneKey] : FRAGMENT_LABELS[dropZoneKey]} ×${dropCount}.`
+          : '';
+        showCardNotif('error', lang === 'en'
+          ? `Enhancement failed. Blade destroyed.${fragMsg}`
+          : `강화 실패. 검 파괴.${fragMsg}`);
 
-        const msg = dropCount > 0
-          ? `💥 강화 실패! 검 파괴. ${FRAGMENT_LABELS[dropZoneKey]} ×${dropCount} 획득 | 기초 검 +1 지급`
-          : '💥 강화 실패! 검이 파괴되었습니다. 기초 검 +1 지급';
-        pushToast(msg, 'error');
       }
     }
   }
@@ -378,7 +379,9 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     });
 
     pushToast(
-      `💰 판매 완료! +${gold.toLocaleString()} G, ${FRAGMENT_LABELS[zone]} ×${fragReward} 획득 | 기초 검 +1 지급`,
+      lang === 'en'
+        ? `💰 Sold! +${gold.toLocaleString()} G, ${FRAGMENT_LABELS_EN[zone]} ×${fragReward} | +1 base blade granted`
+        : `💰 판매 완료! +${gold.toLocaleString()} G, ${FRAGMENT_LABELS[zone]} ×${fragReward} 획득 | 기초 검 +1 지급`,
       'success'
     );
     setModal(null);
@@ -390,7 +393,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     if (!sword) return;
     const capacity = BASE_STORAGE_CAPACITY + state.storageUpgradeCount * 10;
     if (state.storage.length >= capacity) {
-      pushToast('보관함이 꽉 찼습니다. 상점에서 확장하세요.', 'error'); return;
+      pushToast(lang === 'en' ? 'Storage full. Expand in the shop.' : '보관함이 꽉 찼습니다. 상점에서 확장하세요.', 'error'); return;
     }
     const freeId    = state.nextSwordId;
     const freeSword = { id: freeId, name: WEAPON_NAMES[1], level: 1 };
@@ -399,7 +402,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
       activeSword: freeSword,
       nextSwordId: freeId + 1,
     });
-    pushToast(`📦 ${sword.name} +${sword.level} 보관 완료 | 기초 검 +1 지급`, 'info');
+    pushToast(lang === 'en' ? `📦 ${sword.name} +${sword.level} stored | +1 base blade granted` : `📦 ${sword.name} +${sword.level} 보관 완료 | 기초 검 +1 지급`, 'info');
   }
 
   // ── Equip from inventory ──────────────────────────────────────────────────────
@@ -412,20 +415,20 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     let newStorage = state.storage.filter((s) => s.id !== swordId);
     if (state.activeSword) {
       if (newStorage.length >= capacity) {
-        pushToast('보관함이 꽉 차서 교체할 수 없습니다.', 'error'); return;
+        pushToast(lang === 'en' ? 'Storage full. Cannot swap.' : '보관함이 꽉 차서 교체할 수 없습니다.', 'error'); return;
       }
       newStorage = [...newStorage, state.activeSword];
     }
 
     update({ activeSword: sword, storage: newStorage });
     setPanel(null);
-    pushToast(`⚔️ ${sword.name} +${sword.level} 장착`, 'info');
+    pushToast(lang === 'en' ? `⚔️ ${sword.name} +${sword.level} equipped` : `⚔️ ${sword.name} +${sword.level} 장착`, 'info');
   }
 
   // ── Shop ──────────────────────────────────────────────────────────────────────
   function handleBuy(key, price) {
     if (state.gold < price) {
-      pushToast('골드가 부족합니다.', 'error'); return;
+      pushToast(lang === 'en' ? 'Insufficient gold.' : '골드가 부족합니다.', 'error'); return;
     }
 
     const item       = SHOP_ITEMS[key];
@@ -435,7 +438,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
     if (item.type === 'skip') {
       const capacity = BASE_STORAGE_CAPACITY + state.storageUpgradeCount * 10;
       if (state.storage.length >= capacity) {
-        pushToast('보관함이 꽉 찼습니다.', 'error'); return;
+        pushToast(lang === 'en' ? 'Storage full.' : '보관함이 꽉 찼습니다.', 'error'); return;
       }
       const newId    = state.nextSwordId;
       const skipSword = { id: newId, name: WEAPON_NAMES[item.value] ?? `+${item.value} 검`, level: item.value };
@@ -443,20 +446,20 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
         storage:     [...state.storage, skipSword],
         nextSwordId: newId + 1,
       };
-      pushToast(`📦 +${item.value} 검이 보관함에 추가되었습니다.`, 'success');
+      pushToast(lang === 'en' ? `📦 +${item.value} sword added to storage.` : `📦 +${item.value} 검이 보관함에 추가되었습니다.`, 'success');
     } else if (item.type === 'boost') {
       extra = { activeBoost: { expiresAt: Date.now() + 10 * 60 * 1000, bonusPct: item.value ?? 5 } };
-      pushToast(`⚡ 10분간 성공확률 +${item.value ?? 5}% 부스트 활성화!`, 'success');
+      pushToast(lang === 'en' ? `⚡ Boost active! +${item.value ?? 5}% for 10 min` : `⚡ 10분간 성공확률 +${item.value ?? 5}% 부스트 활성화!`, 'success');
     } else if (item.type === 'protection') {
       const cur = state.protectionTickets ?? 0;
       extra = {
         protectionTickets: cur + 1,
         protectionTicketsPurchased: (state.protectionTicketsPurchased ?? 0) + 1,
       };
-      pushToast(`🛡️ 파손 방지권 구매 완료 (${cur + 1}개 보유)`, 'success');
+      pushToast(lang === 'en' ? `🛡️ Shield Ticket purchased (${cur + 1} total)` : `🛡️ 파손 방지권 구매 완료 (${cur + 1}개 보유)`, 'success');
     } else if (item.type === 'storage') {
       extra = { storageUpgradeCount: state.storageUpgradeCount + 1 };
-      pushToast(`📦 보관함이 +10칸 확장되었습니다.`, 'success');
+      pushToast(lang === 'en' ? '📦 Storage expanded +10 slots.' : '📦 보관함이 +10칸 확장되었습니다.', 'success');
     }
 
     update({ gold: newGold, ...extra });
@@ -475,6 +478,8 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
         cheatUnlocked={state.cheatUnlocked ?? false}
         onSecretPressStart={handleCheatLongPressStart}
         onSecretPressEnd={handleCheatLongPressEnd}
+        lang={lang}
+        onLangChange={setLang}
       />
 
       <div className="game-body">
@@ -483,6 +488,8 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           fragments={state.fragments}
           storage={state.storage}
           activeBoost={state.activeBoost}
+          lang={lang}
+          cardNotif={cardNotif}
         />
 
         <ActionBar
@@ -491,6 +498,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           onSell={handleSell}
           onStore={handleStore}
           onShop={() => setPanel('shop')}
+          lang={lang}
         />
       </div>
 
@@ -502,6 +510,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           activeSword={state.activeSword}
           onEquip={handleEquip}
           onClose={() => setPanel(null)}
+          lang={lang}
         />
       )}
 
@@ -515,14 +524,15 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           onToggleEnhanceWarnings={(enabled) => {
             update({ enhanceWarningsEnabled: enabled });
             pushToast(
-              enabled
-                ? '강화 경고 팝업이 다시 켜졌습니다.'
-                : '강화 경고 팝업 자동 표시를 끕니다.',
+              lang === 'en'
+                ? (enabled ? 'Enhance warnings re-enabled.' : 'Enhance warnings disabled.')
+                : (enabled ? '강화 경고 팝업이 다시 켜졌습니다.' : '강화 경고 팝업 자동 표시를 끓니다.'),
               'info'
             );
           }}
           onBuy={handleBuy}
           onClose={() => setPanel(null)}
+          lang={lang}
         />
       )}
 
@@ -531,6 +541,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
         <CodexPanel
           maxSuccessLevel={state.maxSuccessLevel ?? 0}
           onClose={() => setPanel(null)}
+          lang={lang}
         />
       )}
 
@@ -542,19 +553,20 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           onToggleStoryPopups={(enabled) => {
             update({ storyPopupsEnabled: enabled });
             pushToast(
-              enabled
-                ? '스토리 팝업이 다시 켜졌습니다.'
-                : '스토리 팝업 자동 표시를 끕니다. 단, 새 phase는 1회 표시됩니다.',
+              lang === 'en'
+                ? (enabled ? 'Story popups re-enabled.' : 'Story popups disabled. New phases still show once.')
+                : (enabled ? '스토리 팝업이 다시 켜졌습니다.' : '스토리 팝업 자동 표시를 끓니다. 단, 새 phase는 1회 표시됩니다.'),
               'info'
             );
           }}
           onOpenStoryPhase={(phaseKey) => setJournalStoryPhase(phaseKey)}
           onClose={() => setPanel(null)}
+          lang={lang}
         />
       )}
 
       {panel === 'help' && (
-        <HelpPanel onClose={() => setPanel(null)} />
+        <HelpPanel onClose={() => setPanel(null)} lang={lang} />
       )}
 
       {panel === 'cheat' && state.cheatUnlocked && (
@@ -584,30 +596,33 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
             update({ protectionTickets: Math.max(0, current + delta) });
           }}
           onClose={() => setPanel(null)}
+          lang={lang}
         />
       )}
-
-      {/* Sell confirmation modal */}
       {modal?.type === 'sell' && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>검 판매</h3>
+            <h3>{lang === 'en' ? 'Sell Blade' : '검 판매'}</h3>
             <p>
-              <strong>{modal.data.name} +{modal.data.level}</strong>을 판매합니다.
+              {lang === 'en'
+                ? <><strong>{modal.data.name} +{modal.data.level}</strong> will be sold.</>
+                : <><strong>{modal.data.name} +{modal.data.level}</strong>을 판매합니다.</>}
             </p>
             <p>
-              획득: <strong>{sellPrice(modal.data.level).toLocaleString()} G</strong>
+              {lang === 'en' ? 'Receive: ' : '획득: '}
+              <strong>{sellPrice(modal.data.level).toLocaleString()} G</strong>
               &nbsp;+&nbsp;
               <strong>
                 {(() => {
                   const z = zoneFragKey(Math.max(1, modal.data.level));
-                  return `${FRAGMENT_LABELS[z]} ×${SELL_FRAGMENT_REWARDS[z] ?? 0}`;
+                  const fragLabel = lang === 'en' ? FRAGMENT_LABELS_EN[z] : FRAGMENT_LABELS[z];
+                  return `${fragLabel} ×${SELL_FRAGMENT_REWARDS[z] ?? 0}`;
                 })()}
               </strong>
             </p>
             <div className="modal-actions">
-              <button className="btn-primary" onClick={confirmSell}>판매</button>
-              <button className="btn-ghost"   onClick={() => setModal(null)}>취소</button>
+              <button className="btn-primary" onClick={confirmSell}>{lang === 'en' ? 'Sell' : '판매'}</button>
+              <button className="btn-ghost"   onClick={() => setModal(null)}>{lang === 'en' ? 'Cancel' : '취소'}</button>
             </div>
           </div>
         </div>
@@ -626,25 +641,27 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           }}
         >
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>강화 경고</h3>
+            <h3>{lang === 'en' ? 'Enhance Warning' : '강화 경고'}</h3>
             <p>
-              <strong>+{enhanceWarning.nextLevel}</strong> 강화 시 파손 방지권이 부족합니다.
+              {lang === 'en'
+                ? <><strong>+{enhanceWarning.nextLevel}</strong> enhancement: insufficient shields.</>
+                : <><strong>+{enhanceWarning.nextLevel}</strong> 강화 시 파손 방지권이 부족합니다.</>}
             </p>
             <p>
-              필요: <strong>{enhanceWarning.reqTickets}개</strong>
+              {lang === 'en' ? 'Need' : '필요'}: <strong>{enhanceWarning.reqTickets}{lang === 'en' ? '' : '개'}</strong>
               &nbsp;|&nbsp;
-              보유: <strong>{enhanceWarning.ticketCount}개</strong>
+              {lang === 'en' ? 'Have' : '보유'}: <strong>{enhanceWarning.ticketCount}{lang === 'en' ? '' : '개'}</strong>
               &nbsp;|&nbsp;
-              부족: <strong>{enhanceWarning.missingTickets}개</strong>
+              {lang === 'en' ? 'Short' : '부족'}: <strong>{enhanceWarning.missingTickets}{lang === 'en' ? '' : '개'}</strong>
             </p>
-            <p>실패하면 검이 파괴됩니다. 그래도 강화하시겠습니까?</p>
+            <p>{lang === 'en' ? 'On failure the blade will be destroyed. Proceed anyway?' : '실패하면 검이 파괴됩니다. 그래도 강화하시겠습니까?'}</p>
             <label className="story-hide-toggle">
               <input
                 type="checkbox"
                 checked={enhanceWarningDontShowAgain}
                 onChange={(e) => setEnhanceWarningDontShowAgain(e.target.checked)}
               />
-              다시 띄우지 않기
+              {lang === 'en' ? "Don't show again" : '다시 띄우지 않기'}
             </label>
             <div className="modal-actions">
               <button
@@ -658,7 +675,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
                   handleEnhance(true);
                 }}
               >
-                계속 강화
+                {lang === 'en' ? 'Proceed' : '계속 강화'}
               </button>
               <button
                 className="btn-ghost"
@@ -670,7 +687,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
                   setEnhanceWarning(null);
                 }}
               >
-                취소
+                {lang === 'en' ? 'Cancel' : '취소'}
               </button>
             </div>
           </div>
@@ -678,7 +695,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
       )}
 
       {storyQueue.length > 0 && (
-        <StoryPhaseModal phaseKey={storyQueue[0]} onClose={closeStoryPhase} />
+        <StoryPhaseModal phaseKey={storyQueue[0]} onClose={closeStoryPhase} lang={lang} />
       )}
 
       {journalStoryPhase && (
@@ -686,6 +703,7 @@ export default function GameScreen({ initialState, username, onReturnMenu }) {
           phaseKey={journalStoryPhase}
           showHideFutureToggle={false}
           onClose={() => setJournalStoryPhase(null)}
+          lang={lang}
         />
       )}
 
