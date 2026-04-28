@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
-  successRate, enhanceCost, sellPrice, fragmentRequirements,
+  successRate, repairableFailRate, destroyRate,
+  enhanceCost, sellPrice, fragmentRequirements,
   swordSacrificeRequired, zoneKey,
 } from '../utils/formulas.js';
 import {
@@ -20,7 +21,7 @@ function parseName(raw = '') {
   };
 }
 
-export default function SwordDisplay({ sword, fragments, storage, activeBoost, lang, cardNotif }) {
+export default function SwordDisplay({ sword, fragments, storage, repairUsed, maxRepair, hasChallengeBoost, lang, cardNotif }) {
   const [overlayOpen, setOverlayOpen] = useState(false);
 
   if (!sword) {
@@ -42,18 +43,26 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
   const sellNext  = sellPrice(nextLevel);
   const fragReqMap = fragmentRequirements(nextLevel);
   const fragEntries = Object.entries(fragReqMap);
-  const sacrifices = swordSacrificeRequired(nextLevel);
+  const sacrifice = swordSacrificeRequired(nextLevel); // { consume: [], require: [] }
+  const consumeList = sacrifice.consume ?? [];
+  const requireList = sacrifice.require ?? [];
+  const hasSwordMats = consumeList.length + requireList.length;
+
+  // Repair status
+  const repUsed    = repairUsed ?? 0;
+  const maxRep     = maxRepair  ?? 2;
+  const repairExhausted = repUsed >= maxRep;
 
   // Boost
-  const boosting = activeBoost && Date.now() < activeBoost.expiresAt;
-  const boostBonus = boosting ? (activeBoost?.bonusPct ?? 0) : 0;
-  const displayRate = Math.min(rate + boostBonus, 95);
+  const boostBonus    = hasChallengeBoost ? 5 : 0;
+  const displayRate   = parseFloat(Math.min(rate + boostBonus, 95).toFixed(1));
+  const displayFail   = parseFloat(Math.max(repairableFailRate(nextLevel) - boostBonus, 0).toFixed(1));
+  const displayBreak  = parseFloat(Math.max(100 - displayRate - displayFail, 0).toFixed(1));
 
-  const hasFragments = fragEntries.every(([key, req]) => (fragments[key] ?? 0) >= req);
-  const hasSacrifices = sacrifices.every(
-    (reqLv) => storage.some((s) => s.level === reqLv)
-  );
-  const canEnhance = (fragEntries.length === 0 || hasFragments) && (sacrifices.length === 0 || hasSacrifices);
+  const hasFragments   = fragEntries.every(([key, req]) => (fragments[key] ?? 0) >= req);
+  const hasConsume     = consumeList.every((lv) => storage.some((s) => s.level === lv));
+  const hasRequire     = requireList.every((lv) => storage.some((s) => s.level === lv));
+  const canEnhance = (fragEntries.length === 0 || hasFragments) && hasConsume && hasRequire;
 
   const { ko: nameKo, en: nameEn } = parseName(WEAPON_NAMES[level] ?? sword.name ?? '');
   const weaponName = lang === 'ko' ? nameKo : nameEn;
@@ -64,7 +73,9 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
 
   const t = lang === 'ko' ? {
     chronicle:  '전승 기록',
-    successRate:'강화 성공률',
+    successRate:'성공률',
+    failRate:   '실패율',
+    breakRate:  '파손률',
     cost:       '강화 비용',
     sell:       '판매가',
     sellNext:   '강화 후 판매가',
@@ -75,7 +86,9 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
     owned:      '보유',
   } : {
     chronicle:  'Chronicle',
-    successRate:'Success',
+    successRate:'Forge',
+    failRate:   'Fail',
+    breakRate:  'Break',
     cost:       'Cost',
     sell:       'Sell',
     sellNext:   'Next Sell',
@@ -117,13 +130,19 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
 
       {/* Stats row */}
       <div className="sword-stats">
-        <span className="stat-chip">{t.successRate} <strong>{displayRate}%</strong>{boosting ? ' ⚡' : ''}</span>
+        <span className="stat-chip">{t.successRate} <strong>{displayRate}%</strong>{hasChallengeBoost ? ' ⚡' : ''}</span>
+        <span className="stat-chip stat-chip--fail">{t.failRate} <strong>{displayFail}%</strong></span>
+        <span className={`stat-chip${displayBreak > 0 ? ' stat-chip--break' : ''}`}>{t.breakRate} <strong>{displayBreak}%</strong></span>
         <span className="stat-chip">{t.cost} <strong>{cost.toLocaleString()} G</strong></span>
         <span className="stat-chip">{t.sell} <strong>{sell.toLocaleString()} G</strong></span>
+        <span className="stat-chip">{t.sellNext} <strong>{sellNext.toLocaleString()} G</strong></span>
+        <span className={`stat-chip${repairExhausted ? ' stat-chip--danger' : ''}`}>
+          {lang === 'ko' ? '수리' : 'Repair'} <strong>{repUsed}/{maxRep}</strong>
+        </span>
       </div>
 
       {/* Materials */}
-      {(fragEntries.length > 0 || sacrifices.length > 0) && (
+      {(fragEntries.length > 0 || hasSwordMats > 0) && (
         <div className="sword-materials">
           <span className="mat-label">{t.mats}</span>
           {fragEntries.map(([key, req]) => {
@@ -135,11 +154,19 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
               </span>
             );
           })}
-          {sacrifices.map((lv) => {
+          {consumeList.map((lv) => {
             const has = storage.some((s) => s.level === lv);
             return (
-              <span key={lv} className={`mat-chip ${has ? '' : 'missing'}`}>
+              <span key={`c${lv}`} className={`mat-chip ${has ? '' : 'missing'}`}>
                 {t.swordReq} +{lv} {t.consume}
+              </span>
+            );
+          })}
+          {requireList.map((lv) => {
+            const has = storage.some((s) => s.level === lv);
+            return (
+              <span key={`r${lv}`} className={`mat-chip ${has ? '' : 'missing'}`}>
+                {t.swordReq} +{lv} (필요)
               </span>
             );
           })}
@@ -166,7 +193,9 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
         <div className="sio-section">
           <div className="sio-label">{lang === 'ko' ? '강화 정보' : 'Enhance Info'}</div>
           <div className="sio-chips">
-            <span className="stat-chip">{t.successRate} <strong>{displayRate}%</strong>{boosting ? ' ⚡' : ''}</span>
+            <span className="stat-chip">{t.successRate} <strong>{displayRate}%</strong>{hasChallengeBoost ? ' ⚡' : ''}</span>
+            <span className="stat-chip stat-chip--fail">{t.failRate} <strong>{displayFail}%</strong></span>
+            <span className={`stat-chip${displayBreak > 0 ? ' stat-chip--break' : ''}`}>{t.breakRate} <strong>{displayBreak}%</strong></span>
             <span className="stat-chip">{t.cost} <strong>{cost.toLocaleString()} G</strong></span>
             <span className="stat-chip">{t.sell} <strong>{sell.toLocaleString()} G</strong></span>
             <span className="stat-chip">{t.sellNext} <strong>{sellNext.toLocaleString()} G</strong></span>
@@ -174,7 +203,7 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
         </div>
 
         {/* Materials */}
-        {(fragEntries.length > 0 || sacrifices.length > 0) && (
+        {(fragEntries.length > 0 || hasSwordMats > 0) && (
           <div className="sio-section">
             <div className="sio-label">{t.mats}</div>
             <div className="sio-mats">
@@ -187,11 +216,19 @@ export default function SwordDisplay({ sword, fragments, storage, activeBoost, l
                   </span>
                 );
               })}
-              {sacrifices.map((lv) => {
+              {consumeList.map((lv) => {
                 const has = storage.some((s) => s.level === lv);
                 return (
-                  <span key={lv} className={`mat-chip ${has ? '' : 'missing'}`}>
+                  <span key={`c${lv}`} className={`mat-chip ${has ? '' : 'missing'}`}>
                     {t.swordReq} +{lv} {t.consume}
+                  </span>
+                );
+              })}
+              {requireList.map((lv) => {
+                const has = storage.some((s) => s.level === lv);
+                return (
+                  <span key={`r${lv}`} className={`mat-chip ${has ? '' : 'missing'}`}>
+                    {t.swordReq} +{lv} (필요)
                   </span>
                 );
               })}

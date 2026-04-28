@@ -5,7 +5,6 @@ import iconFrag2   from '../../image/icon_fragment_2.png';
 import iconFrag3   from '../../image/icon_fragment_3.png';
 import iconFrag4   from '../../image/icon_fragment_4.png';
 import iconFrag5   from '../../image/icon_fragment_5.png';
-import iconShield  from '../../image/icon_방지권.png';
 import iconStorage from '../../image/icon_보관함.png';
 import iconCodex   from '../../image/icon_도감.png';
 import iconJournal from '../../image/icon_일기.png';
@@ -22,8 +21,8 @@ const FRAG_ICONS = {
 export default function GoldBar({
   gold,
   fragments,
-  activeBoost,
-  protectionTickets,
+  repairUsed,
+  maxRepair,
   onReturnMenu,
   onOpenPanel,
   cheatUnlocked,
@@ -34,7 +33,6 @@ export default function GoldBar({
 }) {
   const headerRef = useRef(null);
   const resourceRowRef = useRef(null);
-  const [, setTick] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const [rowOverflows, setRowOverflows] = useState(false);
@@ -48,14 +46,7 @@ export default function GoldBar({
     const ro = new ResizeObserver(check);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [fragments, protectionTickets, activeBoost, resourcesOpen]);
-
-  // Keep boost countdown ticking without remounting
-  useEffect(() => {
-    if (!activeBoost) return;
-    const t = setInterval(() => setTick((n) => n + 1), 1000);
-    return () => clearInterval(t);
-  }, [activeBoost]);
+  }, [fragments, repairUsed, maxRepair, resourcesOpen]);
 
   useEffect(() => {
     const el = headerRef.current;
@@ -73,22 +64,17 @@ export default function GoldBar({
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const now        = Date.now();
-  const boostLeft  = activeBoost ? Math.max(0, Math.ceil((activeBoost.expiresAt - now) / 1000)) : 0;
-  const boosting   = boostLeft > 0;
-  const boostBonus = activeBoost?.bonusPct ?? 0;
-  const mins = Math.floor(boostLeft / 60);
-  const secs = String(boostLeft % 60).padStart(2, '0');
-
-  const tickets = protectionTickets ?? 0;
   const en = lang === 'en';
+  const repair   = repairUsed  ?? 0;
+  const maxRep   = maxRepair   ?? 2;
+  const repairExhausted = repair >= maxRep;
   const fragLabels = en ? FRAGMENT_LABELS_EN : FRAGMENT_LABELS;
   const m = en ? {
     inventory: 'Inventory', codex: 'Codex', journal: 'Journal',
-    help: 'Help', cheat: 'Cheat', exit: 'Exit', shield: 'Shield',
+    help: 'Help', cheat: 'Cheat', exit: 'Exit', shield: 'Shield', settings: 'Settings',
   } : {
     inventory: '보관함', codex: '도감', journal: '일기',
-    help: '도움말', cheat: '치트', exit: '나가기', shield: '방지권',
+    help: '도움말', cheat: '치트', exit: '나가기', shield: '방지권', settings: '설정',
   };
 
   return (
@@ -111,12 +97,13 @@ export default function GoldBar({
             <img className="chip-icon" src={iconSell} alt="" /> {gold.toLocaleString()} G
           </button>
 
-          {/* Protection tickets */}
-          {tickets > 0 && (
-            <span className="frag-chip frag-protection" title={en ? 'Break Shield' : '파손 방지권'}>
-              <img className="chip-icon" src={iconShield} alt="" />{resourcesOpen && <span className="frag-label">{m.shield}</span>} ×{tickets}
-            </span>
-          )}
+          {/* Repair counter */}
+          <span
+            className={`frag-chip frag-protection${repairExhausted ? ' is-exhausted' : ''}`}
+            title={en ? `Repairs: ${repair}/${maxRep}` : `수리: ${repair}/${maxRep}`}
+          >
+            ⚒️{resourcesOpen && <span className="frag-label">{en ? 'Repair' : '수리'}</span>} {repair}/{maxRep}
+          </span>
 
           {/* Fragments — hide if 0 */}
           {Object.entries(FRAG_ICONS).map(([key]) => {
@@ -129,12 +116,7 @@ export default function GoldBar({
             );
           })}
 
-          {/* Boost */}
-          {boosting && (
-            <span className="frag-chip boost-chip">
-              <span className="frag-label">+{boostBonus}%</span> {mins}:{secs}
-            </span>
-          )}
+
         </div>
 
         {/* Right controls */}
@@ -159,6 +141,7 @@ export default function GoldBar({
               <button className="quick-menu-item" onClick={() => { onOpenPanel('codex'); setMenuOpen(false); }}><img className="chip-icon" src={iconCodex} alt="" /> {m.codex}</button>
               <button className="quick-menu-item" onClick={() => { onOpenPanel('journal'); setMenuOpen(false); }}><img className="chip-icon" src={iconJournal} alt="" /> {m.journal}</button>
               <button className="quick-menu-item" onClick={() => { onOpenPanel('help'); setMenuOpen(false); }}>{m.help}</button>
+              <button className="quick-menu-item" onClick={() => { onOpenPanel('settings'); setMenuOpen(false); }}>{m.settings}</button>
               {cheatUnlocked && (
                 <button className="quick-menu-item" onClick={() => { onOpenPanel('cheat'); setMenuOpen(false); }}>{m.cheat}</button>
               )}

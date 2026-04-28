@@ -9,9 +9,9 @@ function parseName(raw = '') {
   };
 }
 
-export default function InventoryPanel({ storage, storageUpgradeCount, activeSword, onEquip, onClose, lang }) {
+export default function InventoryPanel({ storage, storageSlots, activeSword, onEquip, onSell, onClose, lang }) {
   const en = lang === 'en';
-  const capacity   = BASE_STORAGE_CAPACITY + storageUpgradeCount * 10;
+  const capacity   = storageSlots ?? BASE_STORAGE_CAPACITY;
   const emptySlots = capacity - storage.length;
 
   return (
@@ -34,7 +34,7 @@ export default function InventoryPanel({ storage, storageUpgradeCount, activeSwo
         <div className="inv-section-label">{en ? 'Stored' : '보관 중'}</div>
         <div className="inv-list">
           {storage.map((sword) => (
-            <InventorySlotItem key={sword.id} sword={sword} onEquip={onEquip} lang={lang} />
+            <InventorySlotItem key={sword.id} sword={sword} onEquip={onEquip} onSell={onSell} lang={lang} />
           ))}
           {emptySlots > 0 && (
             <div className="inv-empty-card">{en ? `${emptySlots} empty slot(s)` : `빈 슬롯 ${emptySlots}칸`}</div>
@@ -45,7 +45,7 @@ export default function InventoryPanel({ storage, storageUpgradeCount, activeSwo
   );
 }
 
-function InventorySlotItem({ sword, onEquip, isActive = false, lang }) {
+function InventorySlotItem({ sword, onEquip, onSell, isActive = false, lang }) {
   const en = lang === 'en';
   const spriteStyle = getWeaponSpriteStyle(sword.level);
   const className = `inv-card inv-rarity-${getRarityKey(sword.level)} ${isActive ? 'is-active' : ''}`;
@@ -71,13 +71,21 @@ function InventorySlotItem({ sword, onEquip, isActive = false, lang }) {
         </div>
       </div>
       {!isActive && (
-        <button
-          className="btn-primary btn-sm"
-          onClick={() => onEquip(sword.id)}
-          title={`${sword.name} +${sword.level}`}
-        >
-          {en ? 'Equip' : '장착'}
-        </button>
+        <div className="inv-card-actions">
+          <button
+            className="btn-primary btn-sm"
+            onClick={() => onEquip(sword.id)}
+            title={`${sword.name} +${sword.level}`}
+          >
+            {en ? 'Equip' : '장착'}
+          </button>
+          <button
+            className="btn-ghost btn-sm"
+            onClick={() => onSell(sword.id)}
+          >
+            {en ? 'Sell' : '판매'}
+          </button>
+        </div>
       )}
     </div>
   );

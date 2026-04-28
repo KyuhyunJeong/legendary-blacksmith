@@ -174,6 +174,80 @@ export const WEAPON_DESCRIPTIONS_EN = [
   'Not a sword, a spear, or a hammer. The small flame the blacksmith first found in a cave, returned through every age and every myth. It cannot be shattered. When the gods\' weapons melt and the world-tree withers, this flame endures — waiting in some distant dark for the next blacksmith to begin.',
 ];
 
+// ─── Enhancement table (index 0 = +1→+2 attempt, index 49 = +50 sell only) ─
+// successRate + repairableFailRate + destroyRate = 100
+export const ENHANCEMENT_TABLE = [
+  // lv, successRate(s), repairableFailRate(r), destroyRate(d), enhanceCost, firstRepairCost, sellPrice
+  { lv:  1, s: 81.0, r: 19.0, d:  0.0, cost:      10, repair:      5, sell:             0 },
+  { lv:  2, s: 79.8, r: 20.2, d:  0.0, cost:      15, repair:     10, sell:            25 },
+  { lv:  3, s: 78.6, r: 21.2, d:  0.2, cost:      15, repair:     10, sell:            60 },
+  { lv:  4, s: 77.3, r: 22.4, d:  0.3, cost:      25, repair:     15, sell:            90 },
+  { lv:  5, s: 76.1, r: 23.4, d:  0.5, cost:      30, repair:     20, sell:           160 },
+  { lv:  6, s: 74.9, r: 24.5, d:  0.6, cost:      40, repair:     25, sell:           250 },
+  { lv:  7, s: 73.7, r: 25.6, d:  0.7, cost:      50, repair:     30, sell:           360 },
+  { lv:  8, s: 72.4, r: 26.8, d:  0.8, cost:      60, repair:     35, sell:           530 },
+  { lv:  9, s: 71.2, r: 27.8, d:  1.0, cost:      80, repair:     50, sell:           760 },
+  { lv: 10, s: 70.0, r: 28.5, d:  1.5, cost:     100, repair:     60, sell:         1_050 },
+  { lv: 11, s: 67.0, r: 29.8, d:  3.2, cost:     120, repair:     70, sell:         1_350 },
+  { lv: 12, s: 64.0, r: 32.5, d:  3.5, cost:     140, repair:    110, sell:         1_500 },
+  { lv: 13, s: 63.5, r: 32.9, d:  3.6, cost:     170, repair:    140, sell:         2_900 },
+  { lv: 14, s: 63.0, r: 33.4, d:  3.6, cost:     200, repair:    160, sell:         4_300 },
+  { lv: 15, s: 62.5, r: 33.8, d:  3.7, cost:     240, repair:    190, sell:         5_800 },
+  { lv: 16, s: 62.0, r: 34.3, d:  3.8, cost:     290, repair:    230, sell:         7_700 },
+  { lv: 17, s: 61.5, r: 34.7, d:  3.8, cost:     350, repair:    280, sell:        10_100 },
+  { lv: 18, s: 61.0, r: 35.1, d:  3.9, cost:     420, repair:    340, sell:        13_400 },
+  { lv: 19, s: 60.5, r: 35.6, d:  3.9, cost:     500, repair:    400, sell:        18_000 },
+  { lv: 20, s: 60.0, r: 36.0, d:  4.0, cost:     600, repair:    480, sell:        24_500 },
+  { lv: 21, s: 59.0, r: 36.9, d:  4.1, cost:     700, repair:    560, sell:        31_000 },
+  { lv: 22, s: 58.0, r: 37.8, d:  4.2, cost:     810, repair:    650, sell:        34_000 },
+  { lv: 23, s: 57.0, r: 38.6, d:  4.4, cost:     950, repair:    760, sell:        38_000 },
+  { lv: 24, s: 56.0, r: 39.5, d:  4.5, cost:   1_100, repair:  1_100, sell:        43_500 },
+  { lv: 25, s: 54.7, r: 40.8, d:  4.5, cost:   1_300, repair:  1_300, sell:        55_000 },
+  { lv: 26, s: 53.3, r: 42.1, d:  4.6, cost:   1_500, repair:  1_500, sell:        67_500 },
+  { lv: 27, s: 52.0, r: 43.4, d:  4.6, cost:   1_800, repair:  1_800, sell:        83_000 },
+  { lv: 28, s: 50.7, r: 44.6, d:  4.7, cost:   2_100, repair:  2_100, sell:       104_000 },
+  { lv: 29, s: 49.3, r: 45.9, d:  4.8, cost:   2_500, repair:  2_500, sell:       138_000 },
+  { lv: 30, s: 48.0, r: 47.2, d:  4.8, cost:   3_000, repair:  3_000, sell:       190_000 },
+  { lv: 31, s: 46.3, r: 48.8, d:  4.8, cost:   3_500, repair:  3_500, sell:       270_000 },
+  { lv: 32, s: 44.7, r: 50.5, d:  4.8, cost:   4_200, repair:  4_200, sell:       350_000 },
+  { lv: 33, s: 43.0, r: 52.1, d:  4.9, cost:   4_900, repair:  4_900, sell:       460_000 },
+  { lv: 34, s: 41.3, r: 53.7, d:  5.0, cost:   5_800, repair:  5_800, sell:       610_000 },
+  { lv: 35, s: 39.7, r: 55.4, d:  5.0, cost:   6_800, repair:  6_800, sell:       825_000 },
+  { lv: 36, s: 38.0, r: 57.0, d:  5.0, cost:   8_000, repair:  8_000, sell:       900_000 },
+  { lv: 37, s: 37.0, r: 57.8, d:  5.2, cost:   9_800, repair:  9_800, sell:     1_100_000 },
+  { lv: 38, s: 36.0, r: 58.5, d:  5.5, cost:  12_000, repair: 12_000, sell:     1_350_000 },
+  { lv: 39, s: 35.0, r: 59.3, d:  5.7, cost:  15_000, repair: 15_000, sell:     1_700_000 },
+  { lv: 40, s: 34.0, r: 60.0, d:  6.0, cost:  18_000, repair: 18_000, sell:     2_250_000 },
+  { lv: 41, s: 31.0, r: 62.8, d:  6.2, cost:  22_000, repair: 26_000, sell:     3_100_000 },
+  { lv: 42, s: 29.0, r: 64.6, d:  6.4, cost:  27_000, repair: 32_000, sell:     4_350_000 },
+  { lv: 43, s: 27.0, r: 66.4, d:  6.6, cost:  33_000, repair: 40_000, sell:     6_000_000 },
+  { lv: 44, s: 25.0, r: 68.2, d:  6.8, cost:  41_000, repair: 49_000, sell:     8_400_000 },
+  { lv: 45, s: 23.0, r: 70.0, d:  7.0, cost:  50_000, repair: 60_000, sell:    12_500_000 },
+  { lv: 46, s: 18.0, r: 74.5, d:  7.5, cost:  66_000, repair: 92_000, sell:    19_500_000 },
+  { lv: 47, s: 15.0, r: 77.0, d:  8.0, cost:  87_000, repair: 120_000, sell:   36_000_000 },
+  { lv: 48, s: 12.0, r: 79.0, d:  9.0, cost: 110_000, repair: 150_000, sell:   75_000_000 },
+  { lv: 49, s:  6.0, r: 79.0, d: 15.0, cost: 150_000, repair: 210_000, sell:  190_000_000 },
+  { lv: 50, s:  0,   r:  0,   d:  0,   cost:       0, repair:       0, sell: 1_000_000_000 },
+];
+
+// ─── Repair unlock milestones ──────────────────────────────────────────────
+// Key = level that was JUST successfully enhanced TO (unlocks new cap)
+export const REPAIR_UNLOCK_MILESTONES = {
+  11: 4,   // cleared +10→+11
+  21: 7,   // cleared +20→+21
+  31: 10,  // cleared +30→+31
+  41: 11,  // cleared +40→+41
+  42: 12,
+  43: 13,
+  44: 14,
+  45: 15,
+  46: 16,
+  47: 17,
+  48: 18,
+  49: 20,
+};
+export const BASE_MAX_REPAIR = 2;
+
 export const STORY_PHASES = {
   phase0: {
     key: 'phase0',
@@ -350,6 +424,48 @@ export const STORY_PHASES = {
     worldEn: 'Every age passes, but the flame does not. The end of one legend is the beginning of the next.',
     core: '모든 전설은 끝난다. 하지만 불꽃은 언제나 다음 이야기를 기다린다.',
   },
+  phaseHiddenA: {
+    key: 'phaseHiddenA',
+    title: '불꽃에게 인정받은 자',
+    subtitle: 'Chosen by the Flame',
+    caption: '부스트 미사용 & 스킵 사용 엔딩',
+    captionEn: 'Ending: no boost, used skip',
+    monologue: [
+      '대장장이는 불꽃에게 인정받는다.',
+      '불꽃은 검이 아니라 대장장이의 심장에 깃든다.',
+      '늙음과 상처는 남지만, 더 이상 그를 무너뜨릴 수 없다.',
+      '그는 불멸에 가까운 사명을 얻은 불꽃의 대장장이가 된다.',
+    ],
+    monologueEn: [
+      'The blacksmith is recognized by the flame.',
+      'The flame rests not in the sword — but in the blacksmith\'s heart.',
+      'Age and wounds remain, but they can no longer break him.',
+      'He becomes the Blacksmith of the Flame — bearing an undying purpose.',
+    ],
+    world: '불꽃의 선택은 처음부터 검이 아닌 사람이었다.',
+    worldEn: 'The flame\'s choice was never the sword — it was always the smith.',
+    core: '인정',
+  },
+  phaseHiddenB: {
+    key: 'phaseHiddenB',
+    title: '태초의 화신',
+    subtitle: 'The Primordial Incarnate',
+    caption: '부스트 미사용 & 스킵 미사용 엔딩',
+    captionEn: 'Ending: no boost, no skip',
+    monologue: [
+      '대장장이는 사실 불꽃을 찾는 인간이 아니라 태초의 불꽃의 화신이었다.',
+      '비록 육신의 몸을 입고 태어났지만 그는 태초부터 존재했다.',
+      '그가 이를 깨닫는 순간, 자신과 불꽃의 경계는 의미가 없어진다.',
+    ],
+    monologueEn: [
+      'The blacksmith was never a man seeking the flame — he was the primordial flame incarnate.',
+      'Though born in flesh, he had existed since the very beginning.',
+      'The moment he understands, the boundary between himself and the flame ceases to exist.',
+    ],
+    world: '태초부터 하나였다. 단지 기억하지 못했을 뿐이다.',
+    worldEn: 'They were one from the very beginning. He had simply forgotten.',
+    core: '각성',
+  },
 };
 
 // ─── Zone / Fragment metadata ──────────────────────────────────────────────
@@ -373,91 +489,113 @@ export const FRAGMENT_LABELS_EN = {
 
 export const ZONE_MULTIPLIERS = [0, 0.3, 0.5, 0.8, 1.2]; // index 0 = zone 1 (no req)
 
-// ─── Fragment drop weights on destroy (by zone) ───────────────────────────
-// key = zone, value = [{ count, weight }] where weights sum to 100
+// ─── Fragment drop weights on destroy (by sub-zone) ───────────────────────
+// key = zone id, value = [{ count, weight }]
 export const FRAGMENT_DROP_TABLE = {
-  // +1~10
+  // +1~+10  →  worn
   worn: [
-    { count: 1, weight: 20 },
+    { count: 0, weight: 10 },
+    { count: 1, weight: 25 },
     { count: 2, weight: 35 },
-    { count: 3, weight: 25 },
-    { count: 4, weight: 15 },
-    { count: 6, weight: 5 },
+    { count: 3, weight: 22 },
+    { count: 4, weight:  6 },
+    { count: 5, weight:  2 },
   ],
-  // +11~20
+  // +11~+20  →  steel
   steel: [
-    { count: 1, weight: 15 },
-    { count: 2, weight: 35 },
-    { count: 3, weight: 25 },
-    { count: 5, weight: 5 },
-    { count: 5, weight: 20 },
-    { count: 8, weight: 5 },
+    { count: 0, weight: 15 },
+    { count: 1, weight: 30 },
+    { count: 2, weight: 34 },
+    { count: 3, weight: 16 },
+    { count: 4, weight:  4 },
+    { count: 5, weight:  1 },
   ],
-  // +21~30
+  // +21~+30  →  rune
   rune: [
-    { count: 2, weight: 15 },
-    { count: 3, weight: 35 },
-    { count: 5, weight: 25 },
-    { count: 7, weight: 20 },
-    { count: 10, weight: 5 },
+    { count: 0, weight: 20 },
+    { count: 1, weight: 35 },
+    { count: 2, weight: 30 },
+    { count: 3, weight: 12 },
+    { count: 4, weight:  2.5 },
+    { count: 5, weight:  0.5 },
   ],
-  // +31~40
+  // +31~+40  →  ancient
   ancient: [
-    { count: 3, weight: 15 },
-    { count: 5, weight: 35 },
-    { count: 7, weight: 25 },
-    { count: 10, weight: 20 },
-    { count: 15, weight: 5 },
+    { count: 0, weight: 28 },
+    { count: 1, weight: 36 },
+    { count: 2, weight: 25 },
+    { count: 3, weight:  9 },
+    { count: 4, weight:  1.5 },
+    { count: 5, weight:  0.5 },
   ],
-  // +41~50
-  legend: [
-    { count: 5, weight: 15 },
-    { count: 8, weight: 35 },
-    { count: 12, weight: 25 },
-    { count: 18, weight: 20 },
-    { count: 30, weight: 5 },
+  // +41~+45  →  legend (lower sub-zone, EV ≈ 0.40)
+  legend_lo: [
+    { count: 0, weight: 65 },
+    { count: 1, weight: 30 },
+    { count: 2, weight:  5 },
+  ],
+  // +46~+49  →  legend (upper sub-zone, EV ≈ 0.83)
+  legend_hi: [
+    { count: 0, weight: 35 },
+    { count: 1, weight: 50 },
+    { count: 2, weight: 12 },
+    { count: 3, weight:  3 },
   ],
 };
 
-// ─── Fragment rewards on sell (by zone) ───────────────────────────────────
-export const SELL_FRAGMENT_REWARDS = {
-  worn: 3,
-  steel: 4,
-  rune: 6,
-  ancient: 8,
-  legend: 12,
-};
-
-// ─── Sword sacrifice table ──────────────────────────────────────────────────
-// key = target level, value = array of required sword levels in storage
+// ─── Sword sacrifice / storage-requirement table ─────────────────────────
+// key = target level (the level being enhanced TO)
+// value = { consume: [...], require: [...] }
+// consume: swords removed from storage on attempt
+// require: swords that must be in storage but are NOT consumed (+50 uses +49)
 export const SWORD_SACRIFICE = {
-  20: [10],
-  30: [20],
-  40: [30],
-  47: [10],
-  48: [20],
-  49: [30],
-  50: [10, 20, 30, 40],
+  46: { consume: [10], require: [] },
+  47: { consume: [20], require: [] },
+  48: { consume: [30], require: [] },
+  49: { consume: [40], require: [] },
+  50: { consume: [],   require: [49] },
 };
 
-// ─── Shop prices ───────────────────────────────────────────────────────────
-export const SHOP_ITEMS = {
-  prot:    { label: '파손 방지권',             price: 'dynamic', type: 'protection' },
-  skip10:  { label: '+10 스킵권',           price: 10000,     type: 'skip',       value: 10 },
-  skip20:  { label: '+20 스킵권',           price: 75000,     type: 'skip',       value: 20 },
-  skip30:  { label: '+30 스킵권',           price: 600000,    type: 'skip',       value: 30 },
-  skip40:  { label: '+40 스킵권',           price: 5000000,   type: 'skip',       value: 40 },
-  boost5:  { label: '성공확률 +5%권 (10분)',  price: 250000,    type: 'boost',      value: 5 },
-  boost10: { label: '성공확률 +10%권 (10분)', price: 1000000,   type: 'boost',      value: 10 },
-  storage: { label: '보관함 +10',           price: 'dynamic', type: 'storage' },
+// ─── Skip ticket / challenge package ─────────────────────────────────────
+export const SKIP_TICKETS = [
+  { key: 'skip12', label: '+12 스킵권', labelEn: '+12 Skip Ticket', price:     4_000, value: 12, unlockLevel: 12 },
+  { key: 'skip24', label: '+24 스킵권', labelEn: '+24 Skip Ticket', price:    60_000, value: 24, unlockLevel: 24 },
+  { key: 'skip36', label: '+36 스킵권', labelEn: '+36 Skip Ticket', price: 1_000_000, value: 36, unlockLevel: 36 },
+];
+export const CHALLENGE_PACKAGE = {
+  key: 'challenge36',
+  label: '+36 챌린지 패키지', labelEn: '+36 Challenge Package',
+  price: 4_000_000,
+  value: 36,
+  boostPct: 5,
+  unlockLevel: 46,
 };
 
-// Protection tickets needed per zone (index 0 = zone 1: levels 1–10)
-export const PROTECTION_TICKETS_NEEDED = [1, 3, 7, 13, 31];
+// ─── Fragment exchange rates (lower → upper, ratio = how many lower = 1 upper) ──
+export const FRAGMENT_EXCHANGE_RATES = [
+  { from: 'worn',    to: 'steel',   ratio: 5 },
+  { from: 'steel',   to: 'rune',    ratio: 5 },
+  { from: 'rune',    to: 'ancient', ratio: 5 },
+  { from: 'ancient', to: 'legend',  ratio: 8 },
+];
 
-// ─── Starting game state ───────────────────────────────────────────────────
-export const STARTING_GOLD = 5000;
-export const BASE_STORAGE_CAPACITY = 20;
+// ─── Storage tiers (fixed steps) ──────────────────────────────────────────
+// Each entry: the TOTAL slots after purchasing, and the price to reach it
+export const STORAGE_TIERS = [
+  { slots: 10, price:         0 }, // default, cannot purchase
+  { slots: 15, price:    30_000 },
+  { slots: 20, price:    80_000 },
+  { slots: 25, price:   180_000 },
+  { slots: 30, price:   400_000 },
+  { slots: 35, price:   800_000 },
+  { slots: 40, price: 1_500_000 },
+  { slots: 45, price: 2_500_000 },
+  { slots: 50, price: 4_000_000 },
+];
+
+// ─── Starting game state ──────────────────────────────────────────────────
+export const STARTING_GOLD = 500;
+export const BASE_STORAGE_CAPACITY = 10;
 export const MAX_SAVE_SLOTS = 3;
 
 export const STARTING_STATE = {
@@ -465,15 +603,22 @@ export const STARTING_STATE = {
   activeSword: { id: 1, name: '날카로운 돌조각', level: 1 },
   storage: [],
   fragments: { worn: 0, steel: 0, rune: 0, ancient: 0, legend: 0 },
-  protectionTickets: 3,
-  protectionTicketsPurchased: 0,
-  activeBoost: null,
-  storageUpgradeCount: 0,
+  // Repair system
+  repairUsed: 0,
+  maxRepairCount: BASE_MAX_REPAIR,
+  // Boost tracking
+  challengeBoostWeaponId: null,
+  usedBoostThisGame: false,
+  usedSkipThisGame: false,
+  // Storage
+  storageSlots: BASE_STORAGE_CAPACITY,
   nextSwordId: 2,
   maxSuccessLevel: 0,
   seenStoryPhases: [],
   storyPopupsEnabled: true,
   enhanceWarningsEnabled: true,
+  goldWarningEnabled: true,
+  autoBreakWarningEnabled: true,
   cheatUnlocked: false,
   cheatForceOutcome: 'none',
   cheatIgnoreRequirements: false,

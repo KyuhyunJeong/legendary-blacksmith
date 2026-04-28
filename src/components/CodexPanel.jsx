@@ -4,7 +4,6 @@ import {
   enhanceCost,
   fragmentRequirements,
   swordSacrificeRequired,
-  protectionRequired,
   sellPrice,
 } from '../utils/formulas.js';
 import {
@@ -180,6 +179,8 @@ export default function CodexPanel({ maxSuccessLevel, onClose, lang = 'ko' }) {
             const fragReqMap = fragmentRequirements(level);
             const fragEntries = Object.entries(fragReqMap);
             const sacrifices = swordSacrificeRequired(level);
+            const consumeSwords = sacrifices.consume ?? [];
+            const requireSwords = sacrifices.require ?? [];
             const spriteStyle = !isPreview ? getWeaponSpriteStyle(level) : null;
             const isFlipped = flipped.has(level);
 
@@ -228,9 +229,8 @@ export default function CodexPanel({ maxSuccessLevel, onClose, lang = 'ko' }) {
                     <div className="codex-stats">
                       <span>{t.successRate} <strong>{successRate(level)}%</strong></span>
                       <span>{t.cost} <strong>{enhanceCost(level).toLocaleString()} G</strong></span>
-                      <span>{t.shields} <strong>{protectionRequired(level)}</strong></span>
                     </div>
-                    {(fragEntries.length > 0 || sacrifices.length > 0) && (
+                    {(fragEntries.length > 0 || consumeSwords.length > 0 || requireSwords.length > 0) && (
                       <div className="codex-mats">
                         <span className="codex-mats-label">{t.mats}</span>
                         {fragEntries.map(([key, req]) => (
@@ -238,9 +238,14 @@ export default function CodexPanel({ maxSuccessLevel, onClose, lang = 'ko' }) {
                           {(lang === 'ko' ? FRAGMENT_LABELS : FRAGMENT_LABELS_EN)[key]} ×{req}
                           </span>
                         ))}
-                        {sacrifices.map((reqLv) => (
+                        {consumeSwords.map((reqLv) => (
                           <span key={`${level}-sac-${reqLv}`} className="codex-mat-chip codex-mat-sword">
                             {t.sword} +{reqLv} {t.consume}
+                          </span>
+                        ))}
+                        {requireSwords.map((reqLv) => (
+                          <span key={`${level}-req-${reqLv}`} className="codex-mat-chip codex-mat-sword">
+                            {t.sword} +{reqLv} {lang === 'ko' ? '보유 필요' : 'req. (keep)'}
                           </span>
                         ))}
                       </div>

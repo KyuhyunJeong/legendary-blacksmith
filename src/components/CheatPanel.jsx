@@ -16,12 +16,13 @@ export default function CheatPanel({
   cheatForceOutcome,
   cheatIgnoreRequirements,
   fragments,
-  protectionTickets,
+  repairUsed,
+  maxRepair,
   onSetForceOutcome,
   onToggleIgnoreRequirements,
   onAdjustGold,
   onAdjustFragment,
-  onAdjustProtection,
+  onAdjustRepairUsed,
   onClose,
   lang,
 }) {
@@ -88,7 +89,7 @@ export default function CheatPanel({
         </section>
 
         <section className="cheat-block">
-          <h3>{en ? 'Adjust Fragments' : '부속품 조정'}</h3>
+          <h3>{en ? 'Adjust Fragments' : '파편 조정'}</h3>
           <div className="cheat-list">
             {Object.entries(fragLabels).map(([key, label]) => (
               <div key={key} className="cheat-row">
@@ -102,16 +103,17 @@ export default function CheatPanel({
                 </div>
               </div>
             ))}
+          </div>
+        </section>
 
-            <div className="cheat-row cheat-row-highlight">
-              <span>{en ? 'Shield Ticket' : '파손 방지권'}</span>
-              <strong>{protectionTickets ?? 0}</strong>
-              <div className="cheat-actions">
-                <button type="button" onClick={() => onAdjustProtection(-10)}>-10</button>
-                <button type="button" onClick={() => onAdjustProtection(-1)}>-1</button>
-                <button type="button" onClick={() => onAdjustProtection(1)}>+1</button>
-                <button type="button" onClick={() => onAdjustProtection(10)}>+10</button>
-              </div>
+        <section className="cheat-block">
+          <h3>{en ? 'Repair Used' : '수리 사용 횟수'}</h3>
+          <div className="cheat-row">
+            <span>{en ? 'Used / Max' : '사용 / 최대'}</span>
+            <strong>{repairUsed ?? 0} / {maxRepair ?? 2}</strong>
+            <div className="cheat-actions">
+              <button type="button" onClick={() => onAdjustRepairUsed(-1)}>-1</button>
+              <button type="button" onClick={() => onAdjustRepairUsed(1)}>+1</button>
             </div>
           </div>
         </section>
